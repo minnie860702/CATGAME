@@ -994,7 +994,6 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
       <div class="name-row"><input id="settleName" class="name-input" maxlength="16" autocomplete="off" spellcheck="false"><button class="btn primary" id="settleSave">保存成績</button></div>
     </div>
     <div class="settle done" id="settleDone" hidden><p id="settleDoneText"></p><button class="btn" id="settleView">查看紀錄</button></div>
-    <div id="overAch" hidden></div>
     <div id="overSkills"></div>
     <div class="row"><button class="btn primary" id="retryBtn">再玩一次</button><button class="btn" id="menuBtn">換一隻貓</button></div>
   </div>
@@ -3751,8 +3750,6 @@ function gameOver(){
   SAVE.run=null;persist();
   setTimeout(()=>{
     $('oLv').textContent=p.level;$('oTime').textContent=fmt(G.t);$('oKill').textContent=G.kills;$('oBoss').textContent=G.bossKills;$('oCoins').textContent=`本局拿到金幣 ${G.coinsRun||0} 枚，目前共有 ${SAVE.coins} 枚`;
-    {const ar=(G.achRun||[]).map(id=>ACHMAP[id]).filter(Boolean),box=$('overAch');box.hidden=!ar.length;
-      if(ar.length){const unc=ar.filter(a=>!(SAVE.achClaim||{})[a.id]);box.innerHTML=`<div class="oa-h"><span class="oa-t">本局 ${ar.length} 項成就${unc.length?`<em><i class="acoin"></i>${unc.reduce((v,a)=>v+a.r,0)}</em>`:''}</span>${unc.length?`<button class="btn" id="overAchGo">去領取</button>`:''}</div>`;const go=$('overAchGo');if(go)go.onclick=()=>{SFX('click');openAch();};}}
     $('overSkills').innerHTML=skillChips()||'<span style="color:var(--muted);font-size:13px">還沒學到任何技能</span>';
     $('overTitle').textContent=G.cleared?'通關！冒險完成':G.quit?'冒險結束':'喵嗚……倒下了';
     $('settleBox').hidden=false;$('settleDone').hidden=true;$('settleName').value='';$('settleName').placeholder='例如：'+(SAVE.lastName||defaultRunName(G.cls));
