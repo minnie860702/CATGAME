@@ -2357,7 +2357,9 @@ const SFXDEF={
   ult:{gap:600,play(){noise(0.7,'bandpass',900,0.3,null,0,0.6);[60,64,67,72].forEach(m=>tone(mtof(m),mtof(m),0.7,'sawtooth',0.05,null,0.08));}},
   death:{gap:1000,play(){[67,63,60,55].forEach((m,i)=>tone(mtof(m),mtof(m-1),0.32,'triangle',0.15,null,i*0.26));}},
   bossdie:{gap:500,play(){noise(0.8,'lowpass',500,0.4);[72,76,79,84,88].forEach((m,i)=>tone(mtof(m),mtof(m),0.2,'square',0.07,null,0.25+i*0.08));}},
-  click:{gap:60,play(){tone(900,700,0.04,'sine',0.08);}}
+  click:{gap:60,play(){tone(900,700,0.04,'sine',0.08);}},
+  // crit: a short bright ding, quieter than attacks, at most every 0.2 s so heavy crit builds don't turn into noise
+  crit:{gap:200,play(){tone(mtof(93),mtof(98),0.07,'triangle',0.06);tone(mtof(100),mtof(100),0.05,'sine',0.035,null,0.03);}}
 };
 function SFX(k){if(!AU.ctx||!AU.set.sfx||AU.ctx.state!=='running')return;const d=SFXDEF[k];if(!d)return;const now=performance.now();if(now-(AU.last[k]||0)<d.gap)return;AU.last[k]=now;try{d.play();}catch(_){}}
 
@@ -2735,7 +2737,7 @@ function dmgEnemy(e,amount,o={}){
   if(o.knock&&!e.boss&&!e.prop){const a=Math.atan2(e.y-(o.oy??p.y),e.x-(o.ox??p.x));e.kx+=Math.cos(a)*o.knock;e.ky+=Math.sin(a)*o.knock;}
   if(o.slow){e.slowT=Math.max(e.slowT,o.slowT||1);e.slowAmt=Math.max(e.slowT>0?e.slowAmt:0,o.slow);}
   if(o.root&&!e.boss)e.rootT=Math.max(e.rootT,o.root);
-  addText(e.x,e.y-e.r-4,Math.round(d),crit?'#ffd34d':'#ffffff',crit?17:12);
+  addText(e.x,e.y-e.r-4,Math.round(d),crit?'#ffd34d':'#ffffff',crit?19:12);if(crit)SFX('crit');
   if(e.hp<=0){killEnemy(e);const lv=o.lv??CUR_LV;if(lv>=5&&!e.boss&&!e.prop&&!o.pop&&G.popN<14){G.popN++;const R=58+e.r;
     for(const q of G.enemies){if(q.dead||q.boss||q.prop||q===e)continue;const dx=q.x-e.x,dy=q.y-e.y,rr=R+q.r;if(dx*dx+dy*dy<rr*rr)dmgEnemy(q,e.maxHp*0.45,{pop:true,lv:0,knock:120,ox:e.x,oy:e.y});}
     G.fx.push({type:'boom',x:e.x,y:e.y,r:R,life:.28,max:.28,color:'255,240,170'});}}
@@ -4009,7 +4011,7 @@ function renderCodex(){
     grid.querySelectorAll('canvas').forEach(cv=>drawMobPortrait(cv.getContext('2d'),cv.dataset.k,!!SAVE.codex.mobs[cv.dataset.k]));
   }else if(cxTab==='skills'){
     $('cxCount').textContent='';grid.className='cx-grid skills'+(cxSkTab==='mystery'?'':' rows');
-    const groups=[['war',CLASSES.war.name,CLASSES.war.color],['mage',CLASSES.mage.name,CLASSES.mage.color],['arch',CLASSES.arch.name,CLASSES.arch.color],['gard',CLASSES.gard.name,CLASSES.gard.color],['common','共通','#5cc8ff'],['stamp','印章','#ffb347'],['mystery','神秘','#ff7ad9']];
+    const groups=[['war',CLASSES.war.name,CLASSES.war.color],['mage',CLASSES.mage.name,CLASSES.mage.color],['arch',CLASSES.arch.name,CLASSES.arch.color],['gard',CLASSES.gard.name,CLASSES.gard.color],['common','共通','#5cc8ff'],['stamp','印章','#ffb347']];
     const g=groups.find(x=>x[0]===cxSkTab)||groups[0],col=g[2];
     const tile=(id,name,tag,tip)=>tip?`<div class="cx-sk" style="--c:${col}"><span class="ic"><img src="${iconURL(id)}" alt=""></span><div class="cx-skt">${tipHTML(id,0,true)}</div></div>`:`<button class="cx-tile" style="--c:${col}" ${tip?`data-tip="${id}" data-lv="1"`:''}>${tag?`<em>${tag}</em>`:''}<span class="ic"><img src="${iconURL(id)}" alt=""></span><b>${name}</b></button>`;
     let items='';
