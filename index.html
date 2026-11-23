@@ -989,7 +989,6 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
     <div><div class="guide-step" id="guideStep"></div><h3 id="guideTitle"></h3><ul id="guideText"></ul></div>
     <div class="guide-nav"><button class="btn" id="guidePrev">← 上一頁</button><div class="guide-dots" id="guideDots"></div><button class="btn primary" id="guideNext">下一頁 →</button></div>
   </div>
-  <p class="sub">也可以用鍵盤 ← → 翻頁，手機在圖片上左右滑動</p>
 </section>
 
 <section id="achScreen" class="screen" hidden>
@@ -1094,11 +1093,10 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
       <div class="cf-info"><div class="cf-k">目前的存檔</div><div class="cf-v" id="cfInfo"></div><div class="cf-note" id="cfText"></div></div></div>
     <div class="name-box">
       <div class="name-head">為這段冒險留個名字</div>
-      <p class="name-hint">寫上貓咪的名字或一句話，這局的成績會存進「冒險紀錄」</p>
       <input id="cfName" class="name-input" maxlength="16" autocomplete="off" spellcheck="false">
     </div>
     <div class="row"><button class="btn primary" id="cfSettle">存進紀錄並開始</button><button class="btn" id="cfYes">不存，直接開始</button></div>
-    <button class="link-btn" id="cfNo">取消，回到首頁</button>
+    <button class="link-btn" id="cfNo">取消</button>
   </div>
   <div class="spacer"></div>
 </section>
@@ -1134,7 +1132,6 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
     <div class="name-box" id="settleBox">
       <p class="settle-score" id="settleScore"></p>
       <div class="name-head">為這段冒險留個名字</div>
-      <p class="name-hint">寫上貓咪的名字或一句話，成績會存進「冒險紀錄」</p>
       <div class="name-row"><input id="settleName" class="name-input" maxlength="16" autocomplete="off" spellcheck="false"><button class="btn primary" id="settleSave">保存成績</button></div>
     </div>
     <div class="settle done" id="settleDone" hidden><p id="settleDoneText"></p><button class="btn" id="settleView">查看紀錄</button></div>
@@ -1918,18 +1915,18 @@ function mysteryPool(){return PERKS.filter(x=>x.kind==='mystery'&&!G.perks[x.id]
 
 /* ---------- boss dialogue: three nonsense replies, effects shuffled so the text gives nothing away ---------- */
 const BOSS_LINES=[
- ['哼，又一隻毛茸茸的入侵者。跪下來讚美我的花瓣吧！','我的刺每天都有保養，要不要摸摸看？','玫瑰是紅的，你等一下也會是。'],
- ['……咕嚕嚕……誰……踩了……我的苔蘚……','我……已經……三百年……沒洗澡了……','石頭……不會痛……但會……記仇……'],
- ['嘻嘻嘻，好香的貓味～正好當我的肥料！','你聞到了嗎？這是勝利的味道……也可能是我。','蒼蠅們，開飯囉！'],
- ['沙沙沙……膽敢闖進荊棘森林的小貓，你的毛會被勾成毛球。','我的根已經纏住你的未來了。','每一根刺，都是我失眠的夜晚。'],
- ['朕乃向日葵帝王！見到太陽還不行禮？','朕的臉上有一千三百顆瓜子，你一顆也別想吃。','朕只看向太陽，你這小貓擋到光了。'],
- ['好冷……你的爪子會被凍成冰棒喔。','我的花瓣比雪花還薄，比冰還硬。','安靜一點，你吵到我的冬眠了。'],
- ['咕嘟咕嘟……我的頭好燙，借你的毛擦一下汗。','小心腳下，地面隨時會噴發喔！','我不是香菇，我是火山！'],
- ['滋滋滋——你的毛都豎起來了，是我的電！','許個願吧，吹我一口……然後被雷劈。','打雷了，貓要回家收衣服嗎？'],
- ['噓……你看得到我嗎？我就在你後面。','黑夜是我的花園，你迷路了。','不要盯著我的眼睛看太久。'],
- ['小小的貓啊，你已經走了好遠的路。','我是這片花園的根，所有花草都聽我的。','讓我看看，你的勇氣能長多高。']
+ ['哼，又一隻毛茸茸的入侵者。跪下來讚美我的花瓣吧！','我的刺每天都有保養，要不要摸摸看？','玫瑰是紅的，你等一下也會是。','今天的我也是全花園最美的花。','你身上的灰塵弄髒我的地毯了。','跪下吧，我允許你聞一下我的香味。'],
+ ['……咕嚕嚕……誰……踩了……我的苔蘚……','我……已經……三百年……沒洗澡了……','石頭……不會痛……但會……記仇……','……慢……慢……來……我……不急……','我……肩膀上……長了……一棵樹……','你……走路……太快了……頭暈……'],
+ ['嘻嘻嘻，好香的貓味～正好當我的肥料！','你聞到了嗎？這是勝利的味道……也可能是我。','蒼蠅們，開飯囉！','今天的空氣品質是：我很臭。','別捏鼻子，這是我的香水。','我已經三個月沒洗澡了，自豪！'],
+ ['沙沙沙……膽敢闖進荊棘森林的小貓，你的毛會被勾成毛球。','我的根已經纏住你的未來了。','每一根刺，都是我失眠的夜晚。','你知道失眠的樹有多可怕嗎？','我的每一根刺都有名字。','數羊沒用，我試過了。'],
+ ['朕乃向日葵帝王！見到太陽還不行禮？','朕的臉上有一千三百顆瓜子，你一顆也別想吃。','朕只看向太陽，你這小貓擋到光了。','朕的光芒照耀整座花園！','瓜子是朕的，太陽也是朕的。','朕今天心情好，只打你一半。'],
+ ['好冷……你的爪子會被凍成冰棒喔。','我的花瓣比雪花還薄，比冰還硬。','安靜一點，你吵到我的冬眠了。','靠近我會感冒喔。','我的心跟冰一樣冷……開玩笑的。','你的鼻子凍紅了，好可愛。'],
+ ['咕嘟咕嘟……我的頭好燙，借你的毛擦一下汗。','小心腳下，地面隨時會噴發喔！','我不是香菇，我是火山！','我頭上可以煎蛋，要吃嗎？','我今天差點把自己煮熟了。','站遠一點，我要打噴嚏了……是岩漿噴嚏。'],
+ ['滋滋滋——你的毛都豎起來了，是我的電！','許個願吧，吹我一口……然後被雷劈。','打雷了，貓要回家收衣服嗎？','我一打噴嚏就會打雷。','你的鬍鬚在發抖喔，是因為我嗎？','風一吹我就會長大，你呢？'],
+ ['噓……你看得到我嗎？我就在你後面。','黑夜是我的花園，你迷路了。','不要盯著我的眼睛看太久。','我在你的影子裡住了一個禮拜。','燈是我關的。','你剛剛回頭了嗎？我不在那裡。'],
+ ['小小的貓啊，你已經走了好遠的路。','我是這片花園的根，所有花草都聽我的。','讓我看看，你的勇氣能長多高。','我看著這座花園長大，也看著你長大。','每一片葉子都是我的耳朵。','你的腳步聲，我早就聽見了。']
 ];
-const TALK_REPLIES=['你的花瓣好像褪色了耶','我今天早餐吃了三條魚','喵～（翻肚子）','請問廁所在哪裡？','其實我是一隻狗','你知道企鵝的膝蓋在哪嗎？','我媽說不可以跟陌生的花說話','要不要一起跳個舞？','（朝你丟一顆毛球）','我把你的澆水壺藏起來了','聽說你晚上會偷偷哭','你的根有點腳臭味','可以跟你合照嗎？','我數到三你就投降，一、二……','今天天氣真好，適合除草','你剛剛是不是放屁了','其實我只是路過','喵喵喵喵喵？（認真臉）','你的葉子是不是穿反了','可以幫我簽名嗎？','我帶了除草劑……開玩笑的啦','你長得好像我阿嬤陽台那盆','我們可以當朋友嗎？','（假裝睡著）','我知道你的秘密……你怕毛毛蟲','你的台詞好老套喔','等一下，我鞋帶鬆了','你有沒有考慮去當盆栽？','我剛剛踩到你的親戚了，抱歉','聽說光合作用很累，辛苦了'];
+const TALK_REPLIES=['你的香味好像我阿嬤的香水','我可以在你的葉子上睡午覺嗎？','我昨天夢到你變成沙拉','你有沒有朋友？我可以當你的朋友','可以借我十塊錢嗎？','我剛剛吃了你的親戚，味道還不錯','你的造型很適合當我家的擺飾','我覺得你的髮型很有個性','你會不會怕吸塵器？','我聽說你小時候是一顆種子','你上次澆水是什麼時候？','我的主人說你是雜草','你知道貓有九條命嗎？我還剩八條','要不要猜拳？我出布','這是我第一次跟花講話，好緊張','你是不是偷用我的貓砂？','你身上有蟲耶，不用謝','（盯著你的葉子一直看）','我可以抓一下你的花瓣嗎？就一下','你笑起來像一顆高麗菜','我去過比你更大的花圃','你的根是不是很久沒剪了？','我要去告訴園丁伯伯','（在你面前優雅地舔爪子）','你知道今天是星期幾嗎？我不知道','你的光合作用做完了嗎？','別緊張，我只是來借個廁所','你有 Wi-Fi 嗎？','你為什麼一直瞪我？','我覺得你應該多曬點太陽','我出門前有梳毛，你呢？','你剛剛那句話我聽不懂，可以翻成喵語嗎？','我數學不好，你是第幾隻 BOSS？','（把頭撞上你的莖撒嬌）','我在減肥，所以不吃你','如果我贏了，你要當我的貓抓板','你家的土看起來很好挖','我不是來打架的，我是來鬆土的','我跟你說個秘密……算了不說了','你的影子好像比你可愛','（突然開始追自己的尾巴）','剛剛那隻蝴蝶是你養的嗎？','你會唱歌嗎？我會「喵」','我覺得我們之間有誤會','你的刺是真的還是裝飾用的？','我剛剛踩到你的葉子，對不起喔','你喜歡貓嗎？不喜歡也沒關係','我可以把你種在我家陽台嗎？','（假裝看手錶）啊我要遲到了','你身上的露水可以給我喝嗎？','你今天看起來有點枯','我覺得你比上一隻好看','你知道肥料是什麼做的嗎？','我想跟你借一片葉子當被子','（對著你打了一個大哈欠）','你應該去參加花卉比賽','打贏你可以拿到什麼？','我們可以和平共處，前提是你讓開','你是不是在偷偷長高？','（把一顆小石頭推到你腳邊）','你的花瓣好像褪色了耶','我今天早餐吃了三條魚','喵～（翻肚子）','請問廁所在哪裡？','其實我是一隻狗','你知道企鵝的膝蓋在哪嗎？','我媽說不可以跟陌生的花說話','要不要一起跳個舞？','（朝你丟一顆毛球）','我把你的澆水壺藏起來了','聽說你晚上會偷偷哭','你的根有點腳臭味','可以跟你合照嗎？','我數到三你就投降，一、二……','今天天氣真好，適合除草','你剛剛是不是放屁了','其實我只是路過','喵喵喵喵喵？（認真臉）','你的葉子是不是穿反了','可以幫我簽名嗎？','我帶了除草劑……開玩笑的啦','你長得好像我阿嬤陽台那盆','我們可以當朋友嗎？','（假裝睡著）','我知道你的秘密……你怕毛毛蟲','你的台詞好老套喔','等一下，我鞋帶鬆了','你有沒有考慮去當盆栽？','我剛剛踩到你的親戚了，抱歉','聽說光合作用很累，辛苦了'];
 const TALK_GOOD=[
  {t:'攻擊力 +40%（25 秒）',f(){G.buff.atk=25;}},
  {t:'移動速度 +35%（25 秒）',f(){G.buff.spd=25;}},
@@ -1937,15 +1934,17 @@ const TALK_GOOD=[
  {t:'無敵 6 秒',f(){p.inv=6;}}
 ];
 const TALK_REACT={
- good:['……你這隻貓到底在說什麼？（BOSS 一臉困惑，你趁機熱好身）','（BOSS 愣住了）……竟然無法反駁。','（BOSS 不小心笑了出來，氣勢全沒了）'],
- hit:['什、什麼！？（BOSS 受到了心靈重擊）','嗚哇——！這句話太傷了！','（BOSS 當場自閉，掉了一大塊血）'],
- bad:['你、你竟敢這樣說！！！','（BOSS 氣到冒煙）我要把你做成花肥！','好啊，你成功惹毛我了。']
+ good:['……你這隻貓到底在說什麼？（BOSS 一臉困惑，你趁機熱好身）','（BOSS 愣住了）……竟然無法反駁。','（BOSS 不小心笑了出來，氣勢全沒了）','（BOSS 認真思考了起來，忘記要攻擊）','……好吧，你說得有道理。','（BOSS 臉紅了，偷偷把頭轉開）','哈哈哈，你這隻貓真有趣！','（BOSS 打了個哈欠，給了你喘息的時間）'],
+ hit:['什、什麼！？（BOSS 受到了心靈重擊）','嗚哇——！這句話太傷了！','（BOSS 當場自閉，掉了一大塊血）','（BOSS 的葉子瞬間枯了一片）','你……你怎麼知道的……','（BOSS 蹲在角落畫圈圈）','不要再說了！！我的心好痛！'],
+ bad:['你、你竟敢這樣說！！！','（BOSS 氣到冒煙）我要把你做成花肥！','好啊，你成功惹毛我了。','（BOSS 的眼睛冒出紅光）','你完蛋了，小貓。','（BOSS 用力跺地，整片地面都在抖）','我要叫全部的花草來修理你！']
 };
 let talk=null;
 function openTalk(e){
   G.modal=true;
   const lines=BOSS_LINES[e.variant]||BOSS_LINES[0];
-  const replies=shuffle([...TALK_REPLIES]).slice(0,3),kinds=shuffle(['good','bad','hit']);
+  let seen=[];try{seen=JSON.parse(localStorage.getItem('catGardenTalkSeen')||'[]');}catch(_){}
+  const fresh=TALK_REPLIES.filter(x=>!seen.includes(x)),replies=shuffle(fresh.length>=3?fresh:[...TALK_REPLIES]).slice(0,3),kinds=shuffle(['good','bad','hit']);
+  try{localStorage.setItem('catGardenTalkSeen',JSON.stringify([...seen,...replies].slice(-30)));}catch(_){}
   talk={e,picked:false,opts:replies.map((txt,i)=>({txt,kind:kinds[i],good:TALK_GOOD[(Math.random()*TALK_GOOD.length)|0]}))};
   $('talkName').textContent=e.name;$('talkLine').textContent=lines[(Math.random()*lines.length)|0];$('talkFx').textContent='';$('talkFx').className='talk-fx';
   $('talkHint').textContent=G.anger>=1?'小心：BOSS 已經被惹怒過一次，再惹怒一次小怪會全體爆走！':'選一句話回應。效果隨機：可能幫你、可能害你，也可能直接重創 BOSS。';
@@ -2899,34 +2898,8 @@ const tile=document.createElement('canvas');tile.width=tile.height=256;
 const grassPat=ctx.createPattern(tile,'repeat');
 // static props
 const props=[];(()=>{let seed=42;const r=()=>(seed=(seed*16807)%2147483647)/2147483647;for(let i=0;i<420;i++)props.push({x:r()*WORLD,y:r()*WORLD,k:(r()*5)|0,s:0.7+r()*0.8,c:r()});})();
-let PROP_EV=null;
-// Christmas: some garden props become snowmen, snowy pines or snow patches (the field itself stays clear)
-function drawXmasProp(c,o,t){
-  if(o.c<0.16){// snowman
-    c.fillStyle='rgba(0,0,0,.16)';c.beginPath();c.ellipse(0,16,20,6,0,0,TAU);c.fill();
-    c.strokeStyle='#5a6b78';c.lineWidth=1.6;
-    const ball=(y,r)=>{c.fillStyle='#fbfdff';c.beginPath();c.arc(0,y,r,0,TAU);c.fill();c.stroke();c.fillStyle='rgba(170,200,225,.45)';c.beginPath();c.arc(r*0.3,y+r*0.25,r*0.7,0,TAU);c.fill();};
-    c.strokeStyle='#6b4a2a';c.lineWidth=2;c.beginPath();c.moveTo(-9,-4);c.lineTo(-20,-12);c.moveTo(9,-4);c.lineTo(20,-12+Math.sin(t*2+o.x)*2);c.stroke();
-    c.strokeStyle='#5a6b78';c.lineWidth=1.6;ball(6,13);ball(-8,9.5);ball(-21,7.5);
-    c.fillStyle='#d6283b';c.fillRect(-8,-15,16,3.5);c.fillRect(3,-15,3.5,9);
-    c.fillStyle='#2a2a2a';for(const y of[-6,-1,4])c.fillRect(-1,y,2,2);c.fillRect(-3.5,-23,2,2);c.fillRect(1.5,-23,2,2);
-    c.fillStyle='#ff8a2a';c.beginPath();c.moveTo(0,-20.5);c.lineTo(8,-19.5);c.lineTo(0,-18.5);c.closePath();c.fill();
-    c.fillStyle='#2a2a2a';c.fillRect(-7,-29.5,14,2.5);c.fillRect(-4.5,-37,9,8);c.fillStyle='#d6283b';c.fillRect(-4.5,-31.5,9,2);
-    return true;}
-  if(o.k===0&&o.c<0.42){// pine with snow and twinkling lights
-    c.fillStyle='rgba(0,0,0,.15)';c.beginPath();c.ellipse(0,12,17,5,0,0,TAU);c.fill();
-    c.fillStyle='#6b4a2a';c.fillRect(-2.5,4,5,8);
-    for(const[y,w]of[[4,17],[-7,13],[-17,9]]){c.fillStyle='#2f7a45';c.beginPath();c.moveTo(-w,y);c.lineTo(0,y-14);c.lineTo(w,y);c.closePath();c.fill();c.fillStyle='#f4fbff';c.beginPath();c.moveTo(-w*0.7,y-3);c.lineTo(0,y-14);c.lineTo(w*0.7,y-3);c.quadraticCurveTo(0,y-6,-w*0.7,y-3);c.fill();}
-    const cols=['#ff5d5d','#ffd34d','#7fdbff','#7dff9a'];for(let i=0;i<6;i++){const a=(Math.sin(t*3+i*1.7+o.x)+1)/2;c.globalAlpha=0.35+0.65*a;c.fillStyle=cols[i%4];c.beginPath();c.arc([-9,7,-5,5,-2,3][i],[0,-2,-10,-12,-20,-6][i],1.8,0,TAU);c.fill();}c.globalAlpha=1;
-    c.fillStyle='#ffd34d';c.beginPath();c.arc(0,-31,3,0,TAU);c.fill();
-    return true;}
-  if(o.c>0.82){// snow patch
-    c.fillStyle='rgba(245,250,255,.85)';c.beginPath();c.ellipse(0,4,22,8,0,0,TAU);c.fill();c.beginPath();c.ellipse(-12,2,10,5,0,0,TAU);c.ellipse(13,5,9,4,0,0,TAU);c.fill();
-    c.fillStyle='rgba(180,210,235,.5)';c.beginPath();c.ellipse(4,7,14,3,0,0,TAU);c.fill();return true;}
-  return false;}
 function drawProp(c,o){
   c.save();c.translate(o.x,o.y);c.scale(o.s,o.s);
-  if(PROP_EV==='xmas'&&drawXmasProp(c,o,performance.now()/1000)){c.restore();return;}
   if(o.k===0){c.fillStyle='rgba(0,0,0,.15)';c.beginPath();c.ellipse(0,8,22,7,0,0,TAU);c.fill();c.fillStyle='#4f9a3e';for(const[x,y,r]of[[-12,0,13],[10,-2,14],[0,-10,15]]){c.beginPath();c.arc(x,y,r,0,TAU);c.fill();}c.fillStyle='#65b24c';c.beginPath();c.arc(-2,-14,9,0,TAU);c.fill();}
   else if(o.k===1){c.fillStyle='rgba(0,0,0,.15)';c.beginPath();c.ellipse(0,6,16,5,0,0,TAU);c.fill();c.fillStyle='#a3a89a';c.beginPath();c.ellipse(0,0,15,10,0,0,TAU);c.fill();c.fillStyle='#c4c9bb';c.beginPath();c.ellipse(-4,-3,7,4,0,0,TAU);c.fill();}
   else if(o.k===2){const col=['#ff7aa8','#ffd23f','#ffffff','#b28dff'][(o.c*4)|0];for(let k=0;k<3;k++){const x=(k-1)*9,y=(k%2)*5;c.strokeStyle='#3d8a35';c.lineWidth=2;c.beginPath();c.moveTo(x,y+8);c.lineTo(x,y);c.stroke();c.fillStyle=col;for(let j=0;j<5;j++){c.beginPath();c.arc(x+Math.cos(j*TAU/5)*3.5,y+Math.sin(j*TAU/5)*3.5,3,0,TAU);c.fill();}c.fillStyle='#f5a300';c.beginPath();c.arc(x,y,2,0,TAU);c.fill();}}
@@ -3278,7 +3251,6 @@ function render(){
   c.fillStyle=grassPat;c.fillRect(Math.max(0,camX-10),Math.max(0,camY-10),Math.min(WORLD,camX+viewW+10)-Math.max(0,camX-10),Math.min(WORLD,camY+viewH+10)-Math.max(0,camY-10));
   c.strokeStyle='#2f5a35';c.lineWidth=18;c.strokeRect(-9,-9,WORLD+18,WORLD+18);
   c.fillStyle='#4a8a3f';for(let i=0;i<WORLD;i+=36){for(const[x,y]of[[i,-14],[i,WORLD+14],[-14,i],[WORLD+14,i]]){if(x>camX-30&&x<camX+viewW+30&&y>camY-30&&y<camY+viewH+30){c.beginPath();c.arc(x,y,16,0,TAU);c.fill();}}}
-  PROP_EV=activeEvent();
   for(const o of props)if(o.x>camX-40&&o.x<camX+viewW+40&&o.y>camY-40&&o.y<camY+viewH+40)drawProp(c,o);
   if(!G){return;}
   const inV=(x,y,m=60)=>x>camX-m&&x<camX+viewW+m&&y>camY-m&&y<camY+viewH+m;
@@ -3763,7 +3735,7 @@ $('contBtn').onclick=()=>{if(SAVE.run)newGame(SAVE.run.cls,SAVE.run);};
 $('newBtn').onclick=()=>{$('homeHint').textContent='選一隻貓開始新遊戲';$('cats').scrollIntoView({behavior:'smooth',block:'center'});};
 let pendingCls=null;
 function pickCat(k){
-  if(SAVE.run){pendingCls=k;const r=SAVE.run;$('cfInfo').textContent=`${r.hard?'【高難度】':''}${CLASSES[r.cls].name} · Lv ${r.level} · 存活 ${fmt(r.t)}`;$('cfText').textContent=`改玩${CLASSES[k].name}會覆蓋這份存檔，衣櫃、金幣和圖鑑都會保留。`;$('cfName').value='';$('cfName').placeholder='例如：'+(SAVE.lastName||defaultRunName(r.cls));{const c=$('cfCanvas').getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,176,176);drawCatFit(c,88,110,r.cls,1,1.3,false,3,false,SAVE.wardrobe.eq);}showOnly('confirmScreen');$('cfNo').focus({preventScroll:true});return;}
+  if(SAVE.run){pendingCls=k;const r=SAVE.run;$('cfInfo').textContent=`${r.hard?'【高難度】':''}${CLASSES[r.cls].name} · Lv ${r.level} · 存活 ${fmt(r.t)}`;$('cfText').textContent='這份存檔會被取代（衣櫃、金幣都保留）';$('cfName').value='';$('cfName').placeholder='例如：'+(SAVE.lastName||defaultRunName(r.cls));{const c=$('cfCanvas').getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,176,176);drawCatFit(c,88,110,r.cls,1,1.3,false,3,false,SAVE.wardrobe.eq);}showOnly('confirmScreen');$('cfNo').focus({preventScroll:true});return;}
   openReady(k);
 }
 let rdCls=null,rdRaf=0;
