@@ -1167,7 +1167,7 @@ const CLASSES={
   war:{name:'戰士貓',role:'貼身肉搏',color:'#ff8a3d',fur:'#f0a24e',stripe:'#c4702a',belly:'#fde3bf',hp:150,speed:150,atk:'揮劍掃一大圈，把擋路的花草拍飛',desc:'巷口最大隻的橘貓，吃得多、肉也厚。誰敢碰牠的罐罐，就準備被劍背拍屁股。'},
   mage:{name:'法師貓',role:'施法・怕痛',color:'#a07cff',fur:'#8d9cc0',stripe:'#66749c',belly:'#e6eaf6',hp:95,speed:145,atk:'丟出會自己轉彎找目標的魔法毛球',desc:'整天窩在書櫃頂端翻魔法書的灰藍貓。懶得走路，尾巴一甩，整片花圃就著火了。'},
   arch:{name:'弓箭手貓',role:'遠距離・跑最快',color:'#43c574',fur:'#f4efe4',stripe:'#3b3632',belly:'#ffffff',hp:110,speed:168,atk:'咻咻咻連射小箭，又快又遠',desc:'在屋頂上長大的黑白貓，跳得比誰都快。從不跟花草正面硬碰，總躲在牠們碰不到的地方放冷箭。'},
-  gard:{name:'園丁貓',role:'召喚・佈陣',color:'#2fbfae',fur:'#f3dfc1',stripe:'#b98552',belly:'#fffaf2',hp:115,speed:152,atk:'用澆水壺朝前方灑水，被淋到的盆栽打得更快',desc:'住在溫室裡的奶茶色貓，種什麼活什麼。牠自己不太會打架，卻能讓整座花園替牠出手。'}
+  gard:{name:'園丁貓',role:'召喚・佈陣',color:'#2fbfae',fur:'#f3dfc1',stripe:'#b98552',belly:'#fffaf2',hp:135,speed:152,atk:'用澆水壺朝前方灑水，被淋到的盆栽打得更快',desc:'住在溫室裡的奶茶色貓，種什麼活什麼。牠自己不太會打架，卻能讓整座花園替牠出手。'}
 };
 const CLS_ALL=['war','mage','arch','gard'];
 // the gardener unlocks once the other three cats have each reached Lv50
@@ -1930,16 +1930,16 @@ arch:[
   draw(c){for(const f of G.pets)drawFalcon(c,f);}}
 ],
 gard:[
- {id:'g_pot',name:'貓草砲台',ic:'砲',desc:l=>`種下貓草砲台（${8+l} 秒），每 ${(1.1-0.08*l).toFixed(2)} 秒射出 ${1+XP()} 顆貓掌彈，造成 ${10+6*l} 傷害`,
-  up(dt,l,s){tick(s,dt,3.4-0.25*l,()=>placePot('turret',{life:8+l,dmg:D(10+6*l),rate:1.1-0.08*l,lv:l}));}},
+ {id:'g_pot',name:'貓草砲台',ic:'砲',desc:l=>`種下貓草砲台（${8+l} 秒），每 ${(0.9-0.07*l).toFixed(2)} 秒射出 ${1+XP()} 顆貓掌彈，造成 ${10+6*l} 傷害`,
+  up(dt,l,s){tick(s,dt,(3.4-0.25*l)*0.8,()=>placePot('turret',{life:8+l,dmg:D(10+6*l),rate:0.9-0.07*l,lv:l}));}},
  {id:'g_spring',name:'薄荷彈簧草',ic:'彈',desc:l=>`種下薄荷彈簧草（10 秒），把靠近的怪彈飛，造成 ${18+9*l} 傷害`,
-  up(dt,l,s){tick(s,dt,5-0.35*l,()=>placePot('spring',{life:10,dmg:D(18+9*l),lv:l}));}},
+  up(dt,l,s){tick(s,dt,(5-0.35*l)*0.8,()=>placePot('spring',{life:10,dmg:D(18+9*l),lv:l}));}},
  {id:'g_teaser',name:'逗貓棒草',ic:'逗',desc:l=>`種下逗貓棒草（${6+l} 秒），把周圍 ${200+15*l} 內的怪吸過來，每秒 ${6+3*l} 傷害`,
-  up(dt,l,s){tick(s,dt,7-0.4*l,()=>placePot('teaser',{life:6+l,dmg:D(6+3*l),R:200+15*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(7-0.4*l)*0.8,()=>placePot('teaser',{life:6+l,dmg:D(6+3*l),R:200+15*l,lv:l}));}},
  {id:'g_mint',name:'貓薄荷結界',ic:'霧',desc:l=>`種下貓薄荷結界（${7+l} 秒），範圍 ${85+6*l} 內怪物變慢 30%，每秒 ${12+7*l} 傷害`,
-  up(dt,l,s){tick(s,dt,6-0.35*l,()=>placePot('mint',{life:7+l,dmg:D(12+7*l),R:85+6*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(6-0.35*l)*0.8,()=>placePot('mint',{life:7+l,dmg:D(12+7*l),R:85+6*l,lv:l}));}},
  {id:'g_whip',name:'狗尾草鞭',ic:'鞭',desc:l=>`種下狗尾草鞭（${8+l} 秒），每 1.5 秒橫掃周圍 ${105+6*l}，造成 ${20+11*l} 傷害`,
-  up(dt,l,s){tick(s,dt,5.5-0.3*l,()=>placePot('whip',{life:8+l,dmg:D(20+11*l),R:105+6*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(5.5-0.3*l)*0.8,()=>placePot('whip',{life:8+l,dmg:D(20+11*l),R:105+6*l,lv:l}));}},
  {id:'g_sling',name:'種子彈弓',ic:'弓',aim:true,desc:l=>`朝前方射出 ${(l>=5?3:1)+XP()} 顆種子，命中造成 ${16+8*l} 傷害，落地長出臨時砲台`,
   up(dt,l,s){tick(s,dt,3.2-0.2*l,()=>{if(!nearest(p.x,p.y,560))return false;const a0=aimDir(),n=(l>=5?3:1)+XP(),dm=D(16+8*l),pd=D(8+4*l);for(let i=0;i<n;i++)shoot({a:a0+(i-(n-1)/2)*0.32,spd:430,r:7,dmg:dm,pierce:0,life:0.8,kind:'seedp',onEnd:b=>placePot('temp',{x:b.x,y:b.y,life:4+0.5*l,dmg:pd,rate:0.9,lv:l,free:1})});});}},
  {id:'g_water',name:'灑水大作戰',ic:'灑',desc:l=>`每 ${(4.2-0.3*l).toFixed(1)} 秒灑一圈水，擊退周圍怪物造成 ${12+7*l} 傷害，並讓盆栽加速 3 秒`,
@@ -2541,7 +2541,7 @@ const blessOn=()=>!!(G&&G.blessUntil&&p.level<G.blessUntil);
 function recompute(){
   const c=CLASSES[G.cls],oldMax=p.maxHp;
   Object.assign(p,{maxHp:c.hp+(p.level-1)*3,speedMul:1,armor:0,killHeal:0,killHealCap:0,crit:0.05,critMul:1.8,atkSpd:1,dmgMul:1+0.04*(p.level-1)+G.bonusDmg,cdr:0,shieldMax:0,shieldRegen:0,extraArrows:0,
-    size:1,maxHpMul:1,extraProj:0,pickR:95,fishMul:1,regen:0,potDmg:1,potCap:4});
+    size:1,maxHpMul:1,extraProj:0,pickR:95,fishMul:1,regen:0,potDmg:1.55,potCap:6});
   permApply();
   for(const id in G.skills){const s=SKMAP[id];if(s.apply)s.apply(p,G.skills[id]);}
   for(const id in G.perks){const s=PERKMAP[id];if(s&&s.apply)s.apply(p,G.perks[id]);}
@@ -3006,10 +3006,10 @@ function normalAttack(dt){
      for(let k=0;k<(p.extraProj|0);k++){const o=near.find(o=>angs.every(b=>{let d=Math.atan2(o.y-p.y,o.x-p.x)-b;d=Math.atan2(Math.sin(d),Math.cos(d));return Math.abs(d)>half*1.6;}));angs.push(o?Math.atan2(o.y-p.y,o.x-p.x):a+(k%2?-1:1)*half*2*(1+(k>>1)));}}
     const hitSet=new Set();
     for(const b of angs){
-    for(const o of G.enemies){if(o.dead||hitSet.has(o))continue;const dx=o.x-p.x,dy=o.y-p.y,d=Math.hypot(dx,dy);if(d>R+o.r)continue;let da=Math.atan2(dy,dx)-b;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)<half){hitSet.add(o);dmgEnemy(o,D(9),{knock:70});}}
+    for(const o of G.enemies){if(o.dead||hitSet.has(o))continue;const dx=o.x-p.x,dy=o.y-p.y,d=Math.hypot(dx,dy);if(d>R+o.r)continue;let da=Math.atan2(dy,dx)-b;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)<half){hitSet.add(o);dmgEnemy(o,D(14),{knock:110});}}
     for(const q of G.pots){const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy);let da=Math.atan2(dy,dx)-b;da=Math.atan2(Math.sin(da),Math.cos(da));if(d<R+20&&Math.abs(da)<half+0.2)q.boost=Math.max(q.boost||0,2.5);}
     for(let i=0;i<(angs.length>1?6:9);i++){const c2=b+rand(-half,half),r=rand(30,R);G.fx.push({type:'pt',x:p.x+Math.cos(c2)*r*0.3,y:p.y+Math.sin(c2)*r*0.3,vx:Math.cos(c2)*r*2.2,vy:Math.sin(c2)*r*2.2,life:.35,max:.35,color:'#9be7ff',size:rand(2,3.4)});}}
-    p.face=Math.cos(a)>=0?1:-1;p.atkT=0.7;SFX('atk');
+    p.face=Math.cos(a)>=0?1:-1;p.atkT=0.6;SFX('atk');
   }else{
     const e=nearest(p.x,p.y,BASIC_R.arch);if(!e){p.atkT=0;return;}
     const a=Math.atan2(e.y-p.y,e.x-p.x),n=1+p.extraArrows+p.extraProj;
