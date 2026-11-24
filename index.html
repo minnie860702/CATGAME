@@ -484,16 +484,14 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
   #checkinScreen{display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:center;justify-content:stretch;column-gap:10px;row-gap:8px;padding-inline:max(16px,env(safe-area-inset-left,0px),calc((100vw - 820px) / 2))}
   #checkinScreen>.spacer{display:none}
   #checkinScreen .ci-days,#checkinScreen .home-links{grid-column:1/-1;width:100%;justify-self:center}
-  #checkinScreen:not(:has(#ciResult:not([hidden]))) .ci-top{grid-column:1/-1}
+  #checkinScreen .ci-top{grid-column:1/-1}
   #checkinScreen .ci-top{width:auto;padding:6px 12px;gap:10px}
   #checkinScreen .ci-top canvas{width:84px;height:84px;margin:-14px -4px -12px -6px}
   #checkinScreen .ci-top-v{font-size:15px;margin:2px 0 5px}
   #checkinScreen .ci-top-s{margin-top:4px;font-size:11.5px}
   #checkinScreen .ci-day{padding:3px 2px;gap:1px}
   #checkinScreen .ci-day canvas{width:30px;height:30px}
-  #checkinScreen .ci-reward{width:auto;padding:6px 14px;gap:10px;align-self:stretch}
-  #checkinScreen .ci-reward canvas{width:52px;height:52px}
-  #checkinScreen .ci-reward-coins{font-size:22px;margin-top:3px}
+  #checkinScreen .ci-reward canvas{width:72px;height:72px}
   #checkinScreen .home-links .btn{padding:8px 16px}
 }
 /* landscape phones: "ready" card goes side by side, pause fits one screen */
@@ -693,6 +691,10 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .ci-day.today{border-color:var(--sun);box-shadow:0 0 14px rgba(255,211,77,.4);animation:blink 1.6s infinite}
 .ci-day.today b{color:var(--sun)}
 .ci-reward{display:flex;align-items:center;gap:16px;width:min(460px,100%);box-sizing:border-box;padding:14px 20px;border-radius:18px;background:radial-gradient(circle at 20% 50%,rgba(255,211,77,.22),transparent 60%),var(--panel);border:2px solid var(--sun);box-shadow:0 0 30px rgba(255,211,77,.25);animation:ciPop .45s cubic-bezier(.2,1.6,.4,1)}
+#ciResult.ci-pop{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;box-sizing:border-box;background:rgba(6,14,10,.62);cursor:pointer}
+#ciResult.ci-pop[hidden]{display:none}
+.ci-pop .ci-reward{width:min(420px,100%)}
+.ci-pop-hint{margin:0;font:700 12px/1 var(--f-body);color:rgba(255,255,255,.7);letter-spacing:.1em}
 @keyframes ciPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 .ci-reward canvas{width:88px;height:88px;flex:none}
 .ci-reward-k{font:700 12px/1 var(--f-body);color:var(--muted);letter-spacing:.12em}
@@ -913,6 +915,40 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 #pauseScreen.sk-tab #pauseSkills{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:4px;-webkit-overflow-scrolling:touch}
 #pauseScreen.sk-tab #pauseSkills::-webkit-scrollbar{width:5px}
 #pauseScreen.sk-tab #pauseSkills::-webkit-scrollbar-thumb{background:rgba(214,240,190,.3);border-radius:3px}
+/* small phones: bigger tap areas everywhere, and short portrait screens fit without scrolling */
+.guide-dots button{position:relative}.guide-dots button::after{content:"";position:absolute;inset:-10px -4px}
+.link-btn{min-height:36px;padding:10px 16px}
+@media (orientation:portrait) and (max-height:760px){
+  #goddessScreen{gap:8px}
+  #goddessScreen .lake{width:auto;max-width:100%;height:min(22dvh,190px)}
+  #goddessScreen .goddess-title{font-size:26px;margin:0}
+  #goddessScreen .gd-line{font-size:14px;line-height:1.55;margin:0}
+  #goddessScreen .talk-opts{gap:7px}
+  #goddessScreen .opt{padding:9px 12px;font-size:13.5px;line-height:1.4}
+  #clearScreen{gap:8px}
+  #clearScreen .cl-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  #clearScreen .cl-stats div{padding:7px 4px}#clearScreen .cl-stats b{font-size:17px;margin-top:4px}
+  #clearScreen .cl-stats .score b{font-size:22px}
+  #checkinScreen{gap:8px}
+  #checkinScreen .ci-top{padding:6px 12px}#checkinScreen .ci-top canvas{width:64px;height:64px}
+  #checkinScreen .ci-days{gap:5px}#checkinScreen .ci-day{padding:4px 2px}#checkinScreen .ci-day canvas{width:32px;height:32px}
+  .guide{padding:12px;gap:8px}.guide h3{font-size:18px;margin:4px 0 6px}.guide ul{font-size:14px;line-height:1.6;min-height:0}
+  #pauseScreen .stat-list div{padding:6px 10px}
+}
+@media (orientation:landscape) and (max-height:380px){
+  #checkinScreen{row-gap:5px}
+  #checkinScreen .ci-top canvas{width:64px;height:64px;margin:-8px -2px -8px -4px}
+  #checkinScreen .ci-day canvas{width:24px;height:24px}
+  #checkinScreen .ci-days{grid-template-columns:repeat(10,minmax(0,1fr))}
+}
+#coach{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);transform:translate(-50%,10px);z-index:35;pointer-events:none;width:max-content;max-width:min(440px,calc(100vw - 32px));box-sizing:border-box;padding:10px 16px 10px 12px;border-radius:16px;background:rgba(20,30,24,.9);border:2px solid #ffd34d;color:#fff;font:800 15px/1.45 var(--f-body);display:flex;gap:10px;align-items:center;opacity:0;transition:opacity .25s,transform .25s;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+#coach.on{opacity:1;transform:translate(-50%,0)}
+#coach .ico{font-size:24px;line-height:1;flex:0 0 auto;animation:coachBob 1s ease-in-out infinite}
+#coach small{display:block;font:700 11px/1 var(--f-display);color:#ffd34d;letter-spacing:.1em;margin-bottom:3px}
+@keyframes coachBob{50%{transform:translateY(-3px)}}
+#pauseBtn.coach-hl{animation:coachHl .8s ease-in-out infinite;border-color:#ffd34d}
+@keyframes coachHl{50%{box-shadow:0 0 0 5px rgba(255,211,77,.55)}}
+@media (orientation:landscape) and (max-height:500px){#coach{bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:13.5px;padding:7px 14px 7px 10px}}
 </style>
 
 <canvas id="game"></canvas>
@@ -934,6 +970,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 </div>
 <div id="banner"></div>
 <div id="ultToast" aria-live="polite"></div>
+<div id="coach" aria-live="polite"><span class="ico"></span><span><small></small><span class="tx"></span></span></div>
 <div id="achToast" aria-live="polite"></div>
 <div id="shareModal" hidden><div class="sh-box" role="dialog" aria-label="分享紀錄"><label class="sh-title">稱號<select id="shareTitle"></select></label><img id="shareImg" alt="這局的紀錄圖"><p class="sh-hint" id="shareHint"></p><div class="row sh-btns"><button class="btn primary" id="shareSave">存圖</button><button class="btn" id="shareClose">關閉</button></div></div></div>
 
@@ -1038,8 +1075,8 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
   <div class="ci-top"><canvas id="ciMonthCv" width="200" height="200"></canvas>
     <div class="ci-top-body"><div class="ci-top-k" id="ciMonthK"></div><div class="ci-top-v" id="ciMonthName"></div>
       <div class="ci-bar"><i id="ciBarFill"></i></div><div class="ci-top-s" id="ciStreak"></div></div></div>
-  <div class="ci-reward" id="ciResult" hidden><canvas id="ciItemCv" width="200" height="200"></canvas>
-    <div><div class="ci-reward-k" id="ciRewardK"></div><div class="ci-reward-coins"><i class="coin-ic"></i>＋<b id="ciRewardCoins">0</b></div><div class="ci-reward-item" id="ciRewardItem" hidden></div></div></div>
+  <div class="ci-pop" id="ciResult" hidden><div class="ci-reward"><canvas id="ciItemCv" width="200" height="200"></canvas>
+    <div><div class="ci-reward-k" id="ciRewardK"></div><div class="ci-reward-coins"><i class="coin-ic"></i>＋<b id="ciRewardCoins">0</b></div><div class="ci-reward-item" id="ciRewardItem" hidden></div></div></div><p class="ci-pop-hint">點一下關閉</p></div>
   <div class="ci-days" id="ciDays"></div>
   <div class="row home-links"><button class="btn primary" id="ciClaim">領取今天的獎勵</button><button class="btn" id="ciClose">關閉</button></div>
   <div class="spacer"></div>
@@ -1931,15 +1968,15 @@ arch:[
 ],
 gard:[
  {id:'g_pot',name:'貓草砲台',ic:'砲',desc:l=>`種下貓草砲台（${8+l} 秒），每 ${(0.9-0.07*l).toFixed(2)} 秒射出 ${1+XP()} 顆貓掌彈，造成 ${10+6*l} 傷害`,
-  up(dt,l,s){tick(s,dt,(3.4-0.25*l)*0.8,()=>placePot('turret',{life:8+l,dmg:D(10+6*l),rate:0.9-0.07*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(3.4-0.25*l)*potCdMul(),()=>placePot('turret',{life:8+l,dmg:D(10+6*l),rate:0.9-0.07*l,lv:l}));}},
  {id:'g_spring',name:'薄荷彈簧草',ic:'彈',desc:l=>`種下薄荷彈簧草（10 秒），把靠近的怪彈飛，造成 ${18+9*l} 傷害`,
-  up(dt,l,s){tick(s,dt,(5-0.35*l)*0.8,()=>placePot('spring',{life:10,dmg:D(18+9*l),lv:l}));}},
+  up(dt,l,s){tick(s,dt,(5-0.35*l)*potCdMul(),()=>placePot('spring',{life:10,dmg:D(18+9*l),lv:l}));}},
  {id:'g_teaser',name:'逗貓棒草',ic:'逗',desc:l=>`種下逗貓棒草（${6+l} 秒），把周圍 ${200+15*l} 內的怪吸過來，每秒 ${6+3*l} 傷害`,
-  up(dt,l,s){tick(s,dt,(7-0.4*l)*0.8,()=>placePot('teaser',{life:6+l,dmg:D(6+3*l),R:200+15*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(7-0.4*l)*potCdMul(),()=>placePot('teaser',{life:6+l,dmg:D(6+3*l),R:200+15*l,lv:l}));}},
  {id:'g_mint',name:'貓薄荷結界',ic:'霧',desc:l=>`種下貓薄荷結界（${7+l} 秒），範圍 ${85+6*l} 內怪物變慢 30%，每秒 ${12+7*l} 傷害`,
-  up(dt,l,s){tick(s,dt,(6-0.35*l)*0.8,()=>placePot('mint',{life:7+l,dmg:D(12+7*l),R:85+6*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(6-0.35*l)*potCdMul(),()=>placePot('mint',{life:7+l,dmg:D(12+7*l),R:85+6*l,lv:l}));}},
  {id:'g_whip',name:'狗尾草鞭',ic:'鞭',desc:l=>`種下狗尾草鞭（${8+l} 秒），每 1.5 秒橫掃周圍 ${105+6*l}，造成 ${20+11*l} 傷害`,
-  up(dt,l,s){tick(s,dt,(5.5-0.3*l)*0.8,()=>placePot('whip',{life:8+l,dmg:D(20+11*l),R:105+6*l,lv:l}));}},
+  up(dt,l,s){tick(s,dt,(5.5-0.3*l)*potCdMul(),()=>placePot('whip',{life:8+l,dmg:D(20+11*l),R:105+6*l,lv:l}));}},
  {id:'g_sling',name:'種子彈弓',ic:'弓',aim:true,desc:l=>`朝前方射出 ${(l>=5?3:1)+XP()} 顆種子，命中造成 ${16+8*l} 傷害，落地長出臨時砲台`,
   up(dt,l,s){tick(s,dt,3.2-0.2*l,()=>{if(!nearest(p.x,p.y,560))return false;const a0=aimDir(),n=(l>=5?3:1)+XP(),dm=D(16+8*l),pd=D(8+4*l);for(let i=0;i<n;i++)shoot({a:a0+(i-(n-1)/2)*0.32,spd:430,r:7,dmg:dm,pierce:0,life:0.8,kind:'seedp',onEnd:b=>placePot('temp',{x:b.x,y:b.y,life:4+0.5*l,dmg:pd,rate:0.9,lv:l,free:1})});});}},
  {id:'g_water',name:'灑水大作戰',ic:'灑',desc:l=>`每 ${(4.2-0.3*l).toFixed(1)} 秒灑一圈水，擊退周圍怪物造成 ${12+7*l} 傷害，並讓盆栽加速 3 秒`,
@@ -2521,7 +2558,9 @@ function newGame(cls,snap,opts={}){
     p.level=Math.max(1,snap.level|0);p.need=xpNeed(p.level);p.xp=clamp(+snap.xp||0,0,p.need-1);
     p.x=clamp(+snap.x||WORLD/2,40,WORLD-40);p.y=clamp(+snap.y||WORLD/2,40,WORLD-40);
     recompute();p.hp=clamp(+snap.hp||p.maxHp,1,p.maxHp);p.shield=p.shieldMax;p.inv=2;
-  }else{recompute();p.hp=p.maxHp;p.shield=p.shieldMax;}
+  }else{recompute();p.hp=p.maxHp;p.shield=p.shieldMax;
+    if(!SAVE.tutDone){if(SAVE.stats&&SAVE.stats.play>180){SAVE.tutDone=1;}else G.tut={s:0,t:0,mv:0};}}
+  coachShow(null);
   G.rockSeed=snap&&snap.rockSeed?snap.rockSeed|0:1+((Math.random()*2147483000)|0);G.rocks=G.hard?makeRocks(G.rockSeed):null;
   if(G.rocks)rockPush(p,false);
   if(!snap)G.rerolls=2+permLv('reroll',cls);
@@ -2543,7 +2582,7 @@ const blessOn=()=>!!(G&&G.blessUntil&&p.level<G.blessUntil);
 function recompute(){
   const c=CLASSES[G.cls],oldMax=p.maxHp;
   Object.assign(p,{maxHp:c.hp+(p.level-1)*3,speedMul:1,armor:0,killHeal:0,killHealCap:0,crit:0.05,critMul:1.8,atkSpd:1,dmgMul:1+0.04*(p.level-1)+G.bonusDmg,cdr:0,shieldMax:0,shieldRegen:0,extraArrows:0,
-    size:1,maxHpMul:1,extraProj:0,pickR:95,fishMul:1,regen:0,potDmg:1.55,potCap:6});
+    size:1,maxHpMul:1,extraProj:0,pickR:95,fishMul:1,regen:0,potDmg:1.55,potCap:Math.min(6,2+Math.floor((p.level||1)/10))});
   permApply();
   for(const id in G.skills){const s=SKMAP[id];if(s.apply)s.apply(p,G.skills[id]);}
   for(const id in G.perks){const s=PERKMAP[id];if(s&&s.apply)s.apply(p,G.perks[id]);}
@@ -2627,6 +2666,7 @@ function spawnBoss(){
 function nearest(x,y,maxD,ex){let b=null,bd=maxD*maxD,bp=null,bpd=bd;for(const e of G.enemies){if(e.dead||(ex&&ex.has(e)))continue;const dx=e.x-x,dy=e.y-y,d=dx*dx+dy*dy;if(e.prop){if(d<bpd){bpd=d;bp=e;}}else if(d<bd){bd=d;b=e;}}return b||bp;}
 /* ---------- gardener pots: friendly potted cat-grass (terracotta pot, blue ring, smiling face, never walks) ---------- */
 let potId=0;
+const potCdMul=()=>1.15-0.35*Math.min(1,((p&&p.level)||1)/40);
 function placePot(kind,o={}){
   if(!G.pots)G.pots=[];
   const cap=(p.potCap||4)+(o.free?3:0);if(!o.ult&&G.pots.filter(q=>!q.free||o.free).length>=cap)return false;
@@ -2860,8 +2900,23 @@ $('sealBtn').onclick=()=>{if(!G||!G.choosing)return;if(G.sealMode){G.sealMode=fa
 /* ---------- update ---------- */
 const keys=new Set();
 const joy={active:false,id:null,bx:0,by:0,x:0,y:0};
+const TUT=[
+  {i:'👆',t:()=>TOUCH?'按住畫面任何地方拖曳，貓咪就會跟著跑':'用 WASD 或方向鍵移動貓咪'},
+  {i:'🐾',t:()=>'攻擊是全自動的！你只要負責走位，別被花草包圍'},
+  {i:'💎',t:()=>'打倒怪物會掉小水晶，走過去吸起來就能升級'},
+  {i:'✨',t:()=>'選到的技能會自動發動，同一招再選一次會變更強'},
+  {i:'⏸',t:()=>'右上角 II 可以暫停、看技能。撐住，隊長就快來了！'}];
+function coachShow(k){const el=document.getElementById('coach');if(!el)return;$('pauseBtn').classList.toggle('coach-hl',k===4);
+  if(k==null){el.classList.remove('on');el.dataset.k='';return;}if(el.dataset.k!==String(k)){el.dataset.k=k;el.querySelector('.ico').textContent=TUT[k].i;el.querySelector('small').textContent='新手教學 '+(k+1)+'/'+TUT.length;el.querySelector('.tx').textContent=TUT[k].t();}el.classList.add('on');}
+function tutTick(dt){const T=G.tut;if(!T)return;T.t+=dt;
+  const nx=()=>{T.s++;T.t=0;if(T.s>=TUT.length){G.tut=null;SAVE.tutDone=1;persist(false);coachShow(null);return true;}return false;};
+  if(T.s===0){if(p.moving)T.mv+=dt;if(T.mv>1.6&&nx())return;}
+  else if(T.s===1){if(T.t>4.5&&nx())return;}
+  else if(T.s===2){if((p.level>=2||G.pendingLv>0||T.t>30)&&nx())return;}
+  else if(T.s>=3){if(T.t>5&&nx())return;}
+  coachShow(T.s);}
 function update(dt){
-  G.t+=dt;SAVE.stats.play+=dt;G.achT=(G.achT||0)-dt;if(G.achT<=0){G.achT=1;achCheck();}
+  tutTick(dt);G.t+=dt;SAVE.stats.play+=dt;G.achT=(G.achT||0)-dt;if(G.achT<=0){G.achT=1;achCheck();}
   // input
   let ix=0,iy=0;
   if(keys.has('a')||keys.has('arrowleft'))ix--;if(keys.has('d')||keys.has('arrowright'))ix++;
@@ -3710,7 +3765,7 @@ function kvLayout(){const sp=document.getElementById('splash');if(!sp)return;con
   art.style.width=w+'px';art.style.height=h+'px';art.style.left=left+'px';art.style.top=top+'px';
   sp.dataset.mode=w<W-1?'wide':h<H-1?'tall':'cover';const pw=sp.querySelector('.sp-paw');if(pw){const k=w/IW,PX=785,PY=-10,PW=200,PH=150;pw.style.left=(left+PX*k)+'px';pw.style.top=(top+PY*k)+'px';pw.style.width=PW*k+'px';pw.style.height=PH*k+'px';pw.style.backgroundImage='url('+KV_M+')';pw.style.backgroundSize=w+'px '+h+'px';pw.style.backgroundPosition=(-PX*k)+'px '+(-PY*k)+'px';}const hn=sp.querySelector('.sp-hint');if(hn){const tl=sp.dataset.mode==='tall';hn.style.top=tl?Math.min(H-60,top+h+H*0.06)+'px':'';hn.style.bottom=tl?'auto':'';}const fl=sp.querySelector('.sp-fill');if(fl)fl.style.backgroundImage='url('+(sp.dataset.mode==='tall'?KV_P:KV_M)+')';}
 window.addEventListener('resize',kvLayout);kvLayout();
-function showOnly(id){hideTip();if(G&&TAPLOCK_SCREENS.has(id)&&$(id).hidden)tapLock();for(const s of['startScreen','levelScreen','pauseScreen','overScreen','chestScreen','confirmScreen','readyScreen','clearScreen','talkScreen','helpScreen','codexScreen','shopScreen','goddessScreen','historyScreen','checkinScreen','achScreen'])$(s).hidden=s!==id;}
+function showOnly(id){hideTip();if(id)coachShow(null);if(G&&TAPLOCK_SCREENS.has(id)&&$(id).hidden)tapLock();for(const s of['startScreen','levelScreen','pauseScreen','overScreen','chestScreen','confirmScreen','readyScreen','clearScreen','talkScreen','helpScreen','codexScreen','shopScreen','goddessScreen','historyScreen','checkinScreen','achScreen'])$(s).hidden=s!==id;}
 
 /* chests */
 let curChest=null;
@@ -3944,9 +3999,10 @@ function claimCheckin(){
   if(item){const eq={head:null,face:null,neck:null,back:null,expr:'e_default',outfit:null};eq[item.slot]=item.id;drawCatFit(c,100,104,'war',1,1.3,false,3.3,false,eq);}
   else{for(const[x,y,k]of[[70,120,4.2],[128,128,3.6],[100,84,4.6]]){c.setTransform(k,0,0,k,x,y);drawLoot(c,{x:0,y:0,item:'coin'},1.2);}}
   // re-trigger the pop animation each time
-  const box=$('ciResult');box.style.animation='none';void box.offsetWidth;box.style.animation='';
+  const box=$('ciResult').querySelector('.ci-reward');box.style.animation='none';void box.offsetWidth;box.style.animation='';
   renderCheckin();renderHome();
 }
+$('ciResult').addEventListener('click',()=>{$('ciResult').hidden=true;});
 function openCheckin(){$('ciResult').hidden=true;renderCheckin();showOnly('checkinScreen');$('checkinScreen').scrollTop=0;}
 $('checkinBtn').onclick=openCheckin;$('ciClaim').onclick=claimCheckin;$('ciClose').onclick=()=>{renderHome();showOnly('startScreen');};
 function giftReady(){return giftWeek()&&Store.loaded&&SAVE.gift!==ymd(NOW());}
@@ -4192,7 +4248,7 @@ function statsHTML(){const pc=v=>Math.round(v*100)+'%',row=(k,v,up)=>`<div><i>${
   const atk=p.dmgMul*(G.buff.atk>0?1.4:1),spd=p.speed*(G.buff.spd>0?1.35:1);
   return [row('生命',`${Math.ceil(p.hp)} / ${p.maxHp}`),row('攻擊力',pc(atk),G.buff.atk>0),row('攻擊速度',pc(p.atkSpd)),row('暴擊率',pc(Math.min(1,p.crit))),row('暴擊傷害',pc(p.critMul)),row('移動速度',Math.round(spd),G.buff.spd>0),
     row('技能冷卻',p.cdr>0?'-'+pc(p.cdr):'—'),row('受傷減免',p.armor?p.armor+' 點':'—'),row('每秒回復',p.regen?(p.maxHp*p.regen).toFixed(1):'—'),row('擊殺回血',p.killHeal?p.killHeal.toFixed(1):'—'),
-    row('護盾',p.shieldMax?`${Math.ceil(p.shield)} / ${p.shieldMax}`:'—'),row('多發數',(p.extraProj+(p.extraArrows||0))?'+'+(p.extraProj+(p.extraArrows||0)):'—'),row('拾取範圍',Math.round(p.pickR)),row('體型',pc(p.size))].join('');}
+    row('護盾',p.shieldMax?`${Math.ceil(p.shield)} / ${p.shieldMax}`:'—'),row('多發數',(p.extraProj+(p.extraArrows||0))?'+'+(p.extraProj+(p.extraArrows||0)):'—'),row('拾取範圍',Math.round(p.pickR)),row('體型',pc(p.size)),...(G.cls==='gard'?[row('盆栽上限',p.potCap+' 盆')]:[])].join('');}
 function pauseTab(k){$('pauseTabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pt===k));$('ptMain').hidden=k!=='main';$('ptSkills').hidden=k!=='skills';$('ptStats').hidden=k!=='stats';$('pauseScreen').classList.toggle('sk-tab',k==='skills');$('pauseSkills').scrollTop=0;$('pauseScreen').scrollTop=0;}
 $('pauseSkills').addEventListener('click',e=>{const b=e.target.closest('.pt-h');if(!b)return;const sec=b.parentElement,k=sec.dataset.k;sec.classList.toggle('col');if(sec.classList.contains('col'))PTC.add(k);else PTC.delete(k);try{localStorage.setItem('catGardenPtCol',JSON.stringify([...PTC]));}catch(_){}});
 $('pauseTabs').addEventListener('click',e=>{const b=e.target.closest('button[data-pt]');if(b)pauseTab(b.dataset.pt);});
