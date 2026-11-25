@@ -1049,6 +1049,9 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 @media (orientation:landscape) and (max-height:500px){#readyScreen .rd-role{font-size:13.5px}#readyScreen .rd-desc{font-size:13.5px;line-height:1.5}#readyScreen .rd-stats .st{height:26px}#readyScreen .rd-stats b{font-size:14.5px}}
 .shop-ev{display:block;margin:-4px auto 2px;cursor:pointer}
 .shop-ev[hidden]{display:none}
+.wk-go.locked{border-color:var(--line);color:var(--muted);opacity:.6;cursor:not-allowed}
+.wk-lock-note{flex-basis:100%;font:700 11.5px/1.3 var(--f-body);color:var(--muted)}
+.wk-start{flex-direction:column;align-items:stretch;gap:6px}.wk-cls{flex-wrap:nowrap}.wk-go{min-width:0}
 </style>
 
 <canvas id="game"></canvas>
@@ -1858,7 +1861,14 @@ const ACH=[
  H('h_7777','招財七喵','身上的金幣剛好 7,777',17,()=>SAVE.coins===7777),
  H('h_trap3','一腳一個坑','5 秒內踩到 3 個陷阱',13,()=>!!G&&!!G.trap3),
  H('h_trap5','後院踩雷王','10 秒內踩到 5 個陷阱',25,()=>!!G&&!!G.trap5),
- H('h_99','差一步','在 Lv99 倒下',9,e=>e.end&&!G.quit&&p.level===99)
+ H('h_99','差一步','在 Lv99 倒下',9,e=>e.end&&!G.quit&&p.level===99),
+ H('h_statue','化身石像','完全不移動就到達 Lv20',25,()=>freshRun()&&p.level>=20&&!G.moved),
+ H('h_farm','這是在刷成就吧？','連續 5 局都在 1 分鐘內、Lv5 以下就結束',7,()=>stat('shortRunMax')>=5),
+ H('h_afk','掛機貓','暫停畫面放著超過 10 分鐘',9,()=>!!G&&!!G.afk),
+ H('h_minimal','極簡主義','只帶 1 個職業技能就到達 Lv30',15,()=>runOn()&&p.level>=30&&Object.keys(G.skills).length<=1),
+ H('h_corner','牆角貓','貼著花園邊緣連續待滿 30 秒',9,()=>runOn()&&(G.edgeT||0)>=30),
+ H('h_erase','黑歷史','刪掉 5 筆冒險紀錄',6,()=>stat('delRec')>=5),
+ H('h_glass','玻璃心碎','每週挑戰「玻璃貓」開局 1 分鐘內就倒下',12,e=>e.end&&!G.quit&&!G.cleared&&!!G.wk&&G.wk.k==='glass'&&G.t<60)
 ];
 const ACHMAP={};for(const a of ACH)ACHMAP[a.id]=a;
 const goalOf=a=>typeof a.goal==='function'?a.goal():a.goal;
@@ -1882,7 +1892,7 @@ const permLv=(k,cls)=>(SAVE.perm&&SAVE.perm[cls]&&SAVE.perm[cls][k])||0;
 const permTotal=()=>PERM_CLS.reduce((a,c)=>a+PERM.reduce((b,P)=>b+permLv(P.k,c),0),0);
 function permApply(){const c=G.cls,L=k=>permLv(k,c);p.dmgMul+=0.01*L('atk');p.maxHpMul+=0.02*L('hp');p.speedMul+=0.01*L('spd');p.crit+=0.005*L('crit');p.pickR*=1+0.05*L('pick');}
 const permXp=()=>G?1+0.02*permLv('xp',G.cls):1;
-const STAT_NUM=['runs','kills','bosses','dmg','hardLv','hardLoop','loop','combo','elites','chests','ults','goddess','play','days','deaths','lvls','streak','streakMax','maxHit','earned','spent'];
+const STAT_NUM=['runs','kills','bosses','dmg','hardLv','hardLoop','loop','combo','elites','chests','ults','goddess','play','days','deaths','lvls','streak','streakMax','maxHit','earned','spent','shortRun','shortRunMax','delRec'];
 function achStats(st,hist){const z={cls:{war:0,mage:0,arch:0,gard:0},clsRuns:{war:0,mage:0,arch:0,gard:0},myst:[],lastDay:''};for(const k of STAT_NUM)z[k]=0;
   if(st&&typeof st==='object'&&Object.keys(st).length){for(const k of STAT_NUM)z[k]=Math.max(0,+st[k]||0);for(const o of['cls','clsRuns'])if(st[o])for(const k in z[o])z[o][k]=Math.max(0,st[o][k]|0);
     if(Array.isArray(st.myst))z.myst=[...new Set(st.myst.filter(x=>typeof x==='string'))];if(typeof st.lastDay==='string')z.lastDay=st.lastDay.slice(0,10);return z;}
@@ -1910,7 +1920,7 @@ function achNote(a){if(G){G.achRun=G.achRun||[];if(!G.achRun.includes(a.id))G.ac
 function achCoins(){return Math.max(0,achEarned()-(SAVE.achSpent||0));}
 function addRunStats(){if(!G||G.statsAdded)return;G.statsAdded=1;const s=SAVE.stats;s.runs++;s.kills+=G.kills|0;s.bosses+=G.bossKills|0;s.dmg+=G.dmgDone||0;s.lvls+=p.level;s.cls[G.cls]=Math.max(s.cls[G.cls]||0,p.level);s.clsRuns[G.cls]=(s.clsRuns[G.cls]||0)+1;
   if(!G.quit&&!G.cleared)s.deaths++;if(G.hard){s.hardLv=Math.max(s.hardLv,p.level);s.hardLoop=Math.max(s.hardLoop,G.loop||0);}
-  s.loop=Math.max(s.loop,G.loop||0);s.combo=Math.max(s.combo,G.maxCombo||0);s.maxHit=Math.max(s.maxHit,G.maxHit||0);s.streak=p.level>=50?s.streak+1:0;s.streakMax=Math.max(s.streakMax,s.streak);}
+  s.loop=Math.max(s.loop,G.loop||0);s.combo=Math.max(s.combo,G.maxCombo||0);s.maxHit=Math.max(s.maxHit,G.maxHit||0);s.streak=p.level>=50?s.streak+1:0;s.streakMax=Math.max(s.streakMax,s.streak);{const sh=G.t<60&&p.level<=5;s.shortRun=sh?(s.shortRun||0)+1:0;s.shortRunMax=Math.max(s.shortRunMax||0,s.shortRun);}}
 function achTrack(){const s=SAVE.stats;
   if(runOn()){const d=ymd(NOW());if(s.lastDay!==d){s.lastDay=d;s.days++;}for(const k in G.perks)if(PERKMAP[k]&&PERKMAP[k].kind==='mystery'&&!s.myst.includes(k))s.myst.push(k);}
   const c=SAVE.coins;if(achLastCoins!=null){if(c>achLastCoins)s.earned+=c-achLastCoins;else s.spent+=achLastCoins-c;}achLastCoins=c;}
@@ -3121,7 +3131,7 @@ function tutTick(dt){const T=G.tut;if(!T)return;T.t+=dt;
   else if(T.s>=3){if(T.t>5&&nx())return;}
   coachShow(T.s);}
 function update(dt){
-  tutTick(dt);G.t+=dt;if((G.dlyT=(G.dlyT||0)-dt)<=0){G.dlyT=1;dailyMax('time',G.t/60);dailyMax('level',p.level);if(G.weekly)weeklyLv(p.level);}SAVE.stats.play+=dt;G.achT=(G.achT||0)-dt;if(G.achT<=0){G.achT=1;achCheck();}
+  tutTick(dt);if(p.x<70||p.y<70||p.x>WORLD-70||p.y>WORLD-70)G.edgeT=(G.edgeT||0)+dt;else G.edgeT=0;G.t+=dt;if((G.dlyT=(G.dlyT||0)-dt)<=0){G.dlyT=1;dailyMax('time',G.t/60);dailyMax('level',p.level);if(G.weekly)weeklyLv(p.level);}SAVE.stats.play+=dt;G.achT=(G.achT||0)-dt;if(G.achT<=0){G.achT=1;achCheck();}
   // input
   let ix=0,iy=0;
   if(keys.has('a')||keys.has('arrowleft'))ix--;if(keys.has('d')||keys.has('arrowright'))ix++;
@@ -4238,7 +4248,7 @@ function renderDaily(){const D=dailyEnsure();D.seen=true;
   $('dlReset').textContent=`還有約 ${h} 小時換新任務`;renderWeekly();$('dlCoins').textContent=SAVE.coins.toLocaleString();dlyDot();renderGoals();}
 function renderWeekly(){const W=weeklyEnsure(),R=weekRule(),end=weekMonday();end.setDate(end.getDate()+7);const days=Math.max(1,Math.ceil((end-NOW())/864e5));
   const tiers=WK_TIERS.map(([lv,r],i)=>{const ok=W.best>=lv,got=W.got[i];return got?`<span class="wk-tier got">Lv${lv}<b>✓</b></span>`:ok?`<button class="wk-tier ok" data-wk="${i}">Lv${lv}<b><i class="coin-ic"></i>${r}</b></button>`:`<span class="wk-tier">Lv${lv}<b><i class="coin-ic"></i>${r}</b></span>`;}).join('');
-  const cls=CLS_ALL.filter(c=>c!=='gard'||gardOpen()).map(c=>`<button class="btn wk-go" data-wkc="${c}" style="--c:${CLASSES[c].color}">${CSHORT[c]}</button>`).join('');
+  const cls=CLS_ALL.map(c=>c==='gard'&&!gardOpen()?`<button class="btn wk-go locked" disabled title="三隻貓都到 Lv50 解鎖">🔒 ${CSHORT[c]}</button>`:`<button class="btn wk-go" data-wkc="${c}" style="--c:${CLASSES[c].color}">${CSHORT[c]}</button>`).join('')+(gardOpen()?'':'<span class="wk-lock-note">園丁貓要三隻貓都到 Lv50 才會解鎖</span>');
   $('wkBox').innerHTML=`<div class="wk-card"><div class="wk-top"><span class="wk-ic">${R.ic}</span><div class="wk-tx"><b>${R.n}</b><small>${R.d}</small></div><span class="wk-left">剩 ${days} 天</span></div>
     <div class="wk-best">本週最佳 <b>${W.best?'Lv '+W.best:'還沒挑戰'}</b></div><div class="wk-tiers">${tiers}</div><div class="wk-start"><span>用哪隻貓挑戰？</span><div class="wk-cls">${cls}</div></div></div>`;}
 function weeklyClaim(i){const W=weeklyEnsure(),t=WK_TIERS[i];if(!t||W.best<t[0]||W.got[i])return;W.got[i]=true;W.tot=(W.tot||0)+1;SAVE.coins+=t[1];SFX('coin');persist();achCheck();renderDaily();}
@@ -4556,7 +4566,7 @@ function statsHTML(){const pc=v=>Math.round(v*100)+'%',row=(k,v,up)=>`<div><i>${
 function pauseTab(k){$('pauseTabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pt===k));$('ptMain').hidden=k!=='main';$('ptSkills').hidden=k!=='skills';$('ptStats').hidden=k!=='stats';$('pauseScreen').classList.toggle('sk-tab',k==='skills');$('pauseSkills').scrollTop=0;$('pauseScreen').scrollTop=0;}
 $('pauseSkills').addEventListener('click',e=>{const b=e.target.closest('.pt-h');if(!b)return;const sec=b.parentElement,k=sec.dataset.k;sec.classList.toggle('col');if(sec.classList.contains('col'))PTC.add(k);else PTC.delete(k);try{localStorage.setItem('catGardenPtCol',JSON.stringify([...PTC]));}catch(_){}});
 $('pauseTabs').addEventListener('click',e=>{const b=e.target.closest('button[data-pt]');if(b)pauseTab(b.dataset.pt);});
-function setPause(v){if(!G||G.over||G.choosing||G.modal)return;G.paused=v;if(v){endArmed=false;$('endRunBtn').textContent='結束這局並結算成績';saveRun();$('pauseSkills').innerHTML=pauseTable();$('statList').innerHTML=statsHTML();$('pauseInfo').innerHTML=`<div><i>等級</i><b>${p.level}</b></div><div><i>時間</i><b>${fmt(G.t)}</b></div><div><i>擊殺</i><b>${G.kills}</b></div><div><i>BOSS</i><b>${G.bossKills}</b></div>`;pauseTab('main');showOnly('pauseScreen');}else showOnly(null);}
+function setPause(v){if(!G||G.over||G.choosing||G.modal)return;if(!v&&G.pauseAt&&performance.now()-G.pauseAt>600000)G.afk=1;G.pauseAt=v?performance.now():0;G.paused=v;if(v){endArmed=false;$('endRunBtn').textContent='結束這局並結算成績';saveRun();$('pauseSkills').innerHTML=pauseTable();$('statList').innerHTML=statsHTML();$('pauseInfo').innerHTML=`<div><i>等級</i><b>${p.level}</b></div><div><i>時間</i><b>${fmt(G.t)}</b></div><div><i>擊殺</i><b>${G.kills}</b></div><div><i>BOSS</i><b>${G.bossKills}</b></div>`;pauseTab('main');showOnly('pauseScreen');}else showOnly(null);}
 $('pauseBtn').onclick=()=>setPause(true);
 $('resumeBtn').onclick=$('resumeBtn2').onclick=$('resumeBtn3').onclick=()=>setPause(false);
 $('quitBtn').onclick=toMenu;
@@ -4705,7 +4715,7 @@ $('historyBtn').onclick=()=>openHistory();
 $('shareSave').onclick=saveShare;$('shareTitle').onchange=e=>{shareTitle=e.target.value||null;try{shareTitle?localStorage.setItem('catGardenShareTitle',shareTitle):localStorage.removeItem('catGardenShareTitle');}catch(_){}renderShareImg();};$('shareClose').onclick=closeShare;$('shareModal').addEventListener('click',e=>{if(e.target.id==='shareModal')closeShare();});
 $('hsTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hsSort=b.dataset.s;hsArmed=null;renderHistory();});
 $('hsList').addEventListener('click',e=>{const sh=e.target.closest('[data-share]');if(sh){openShare(sh.dataset.share);return;}const b=e.target.closest('[data-del]');if(!b)return;const id=b.dataset.del;
-  if(hsArmed!==id){hsArmed=id;renderHistory();return;}SAVE.history=SAVE.history.filter(r=>r.id!==id);hsArmed=null;persist();renderHistory();});
+  if(hsArmed!==id){hsArmed=id;renderHistory();return;}SAVE.history=SAVE.history.filter(r=>r.id!==id);SAVE.stats.delRec=(SAVE.stats.delRec||0)+1;hsArmed=null;persist();renderHistory();achCheck();});
 $('retryBtn').onclick=()=>{weeklyArm=!!(G.weekly&&G.weekly.wk===weekKey());newGame(G.cls);};
 $('menuBtn').onclick=toMenu;
 function toMenu(){if(G&&!G.over)saveRun();G=null;p=null;$('hud').hidden=true;$('bossBar').hidden=true;renderHome();showOnly('startScreen');}
