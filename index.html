@@ -4208,6 +4208,8 @@ $('shopBtn').onclick=openShop;
 $('shopEvPill').onclick=()=>{shopTab='cos';shopTierF='all';renderShop();const h=$('sec_e_'+(Object.keys(EVENTS).filter(k=>eventActive(k)).pop()||''))||document.querySelector('[id^="sec_e_"]');if(h)setTimeout(()=>h.scrollIntoView({block:'start',behavior:'smooth'}),60);};achInit();
 $('goalList').addEventListener('click',e=>{const b=e.target.closest('.goal-row');if(!b||b.disabled)return;const x=($('goalPanel')._g||[])[+b.dataset.gi];if(x&&x.go)goalGo(x.go);});
 $('dailyBtn').onclick=()=>{tasksIntroDone();renderDaily();showOnly('dailyScreen');$('dailyScreen').scrollTop=0;if(!SAVE.tasksHelp){SAVE.tasksHelp=1;$('dlHelp').hidden=false;}persist(false);};
+// the task screen has a backdrop blur, which would pin a fixed overlay to the top of its scroll area; keep the sheet at body level
+document.body.appendChild($('dlHelp'));
 $('dlHelpBtn').onclick=()=>{$('dlHelp').hidden=false;};
 $('dlHelpOk').onclick=()=>{$('dlHelp').hidden=true;};
 $('dlHelp').addEventListener('click',e=>{if(e.target===$('dlHelp'))$('dlHelp').hidden=true;});
