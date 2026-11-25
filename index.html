@@ -2275,6 +2275,20 @@ const BOSS_LINES=[
  ['噓……你看得到我嗎？我就在你後面。','黑夜是我的花園，你迷路了。','不要盯著我的眼睛看太久。','我在你的影子裡住了一個禮拜。','燈是我關的。','你剛剛回頭了嗎？我不在那裡。'],
  ['小小的貓啊，你已經走了好遠的路。','我是這片花園的根，所有花草都聽我的。','讓我看看，你的勇氣能長多高。','我看著這座花園長大，也看著你長大。','每一片葉子都是我的耳朵。','你的腳步聲，我早就聽見了。']
 ];
+// 二週目以後：BOSS 好像記得你
+const BOSS_MEMORY=[
+ ['……等一下，你這身毛色，我好像在哪裡看過？','又是你！上次的帳我還沒跟你算！','這次我特地多長了三根刺，就是為了你。'],
+ ['……這個……腳步聲……好像……聽過……','……你……又來了……我……記得……你……','……上次……你踩的……苔蘚……還沒……長回來……'],
+ ['咦？這個貓味……好熟悉喔！','你又來了！我為了你特地三個月沒洗澡！','上次被你打完，我臭了整整一季。'],
+ ['沙沙……這張臉，我在失眠的夜裡夢過。','又見面了。我數你數到第二輪了。','上次你走了之後，我一根刺都沒睡著。'],
+ ['朕……好像見過你這隻小貓？','大膽！又是你！朕記得你的臉！','朕這次多長了一千顆瓜子，就為了打你。'],
+ ['……這股暖暖的毛味，好懷念。','又是你啊，我上次被你弄得融化了一半。','我把上次的事凍起來保存了喔。'],
+ ['咕嘟……你是不是上次那隻把我打熄的貓？','又是你！我整整冒煙冒了一年！','這次我預熱過了，你小心。'],
+ ['滋……這隻貓的靜電感覺好熟悉！','又是你！我的毛到現在還是豎的！','上次你讓我禿了一半，這次我長回來了。'],
+ ['……你回來了。我一直在你的影子裡等你。','我記得你。你上次回頭了三次。','這次的燈，也是我關的。'],
+ ['小小的貓啊，你又走到這裡了。','花園轉了一圈，你也長大了一圈呢。','我記得你上一次的腳步聲，比現在輕一點。']
+];
+const BOSS_MEM_QUOTE=['上一輪你跟我說「{q}」……我到現在還忘不掉。','你上次說「{q}」，我回家想了好久。','「{q}」……你還記得你上次說過這句話嗎？我記得。'];
 const TALK_REPLIES=['你的花瓣好像褪色了耶','我今天早餐吃了三條魚','喵～（翻肚子）','請問廁所在哪裡？','其實我是一隻狗','你知道企鵝的膝蓋在哪嗎？','我媽說不可以跟陌生的花說話','要不要一起跳個舞？','（朝你丟一顆毛球）','我把你的澆水壺藏起來了','聽說你晚上會偷偷哭','你的根有點腳臭味','可以跟你合照嗎？','我數到三你就投降，一、二……','今天天氣真好，適合除草','你剛剛是不是放屁了','其實我只是路過','喵喵喵喵喵？（認真臉）','你的葉子是不是穿反了','可以幫我簽名嗎？','我帶了除草劑……開玩笑的啦','你長得好像我阿嬤陽台那盆','我們可以當朋友嗎？','（假裝睡著）','我知道你的秘密……你怕毛毛蟲','你的台詞好老套喔','等一下，我鞋帶鬆了','你有沒有考慮去當盆栽？','我剛剛踩到你的親戚了，抱歉','聽說光合作用很累，辛苦了','你的影子比你還有氣勢','我剛剛在你的花盆裡上了廁所','你是不是偷吃了我的罐罐？','我阿嬤打架都比你兇','等等，你牙齒卡了一片葉子','你身上那個是蚜蟲還是痣？','我是來收保護費的','先說好，我咬人很痛喔','其實我是來應徵園丁的','你的花語是「欠揍」嗎？','你今天是在 cosplay 花椰菜嗎？','我口袋裡有一隻毛毛蟲，要看嗎？','剛剛那招是必殺技？我以為你在打噴嚏','不要靠近我，我剛洗完澡','你聞起來像過期的沙拉','我主人說你下禮拜就要被剪掉了','喵！！（突然大叫嚇你）','你再瞪我，我就要舔你了喔','我的鬍鬚說你會輸','借過，我要去後面那棵樹磨爪子','你這髮型是自己剪的嗎？','我只是想摸摸你的葉子……然後咬一口','（當著你的面把花盆推下桌）','我投降！……騙你的','聽說你上次輸給一隻吉娃娃','你的根是不是有香港腳？','你要不要先去照一下鏡子？','我有帶鏟子，你懂我的意思吧'];
 const TALK_GOOD=[
  {t:'攻擊力 +40%（25 秒）',f(){G.buff.atk=25;}},
@@ -2295,13 +2309,16 @@ function openTalk(e){
   const fresh=TALK_REPLIES.filter(x=>!seen.includes(x)),replies=shuffle(fresh.length>=3?fresh:[...TALK_REPLIES]).slice(0,3),kinds=shuffle(['good','bad','hit']);
   try{localStorage.setItem('catGardenTalkSeen',JSON.stringify([...seen,...replies].slice(-30)));}catch(_){}
   talk={e,picked:false,opts:replies.map((txt,i)=>({txt,kind:kinds[i],good:TALK_GOOD[(Math.random()*TALK_GOOD.length)|0]}))};
-  $('talkName').textContent=e.name;$('talkLine').textContent=lines[(Math.random()*lines.length)|0];$('talkFx').textContent='';$('talkFx').className='talk-fx';
+  $('talkName').textContent=e.name;let line=lines[(Math.random()*lines.length)|0];
+  if((G.loop||0)>=1&&!e.captain){const M=BOSS_MEMORY[e.variant]||BOSS_MEMORY[0],q=G.talkMem&&G.talkMem[e.variant];line=q&&Math.random()<0.5?BOSS_MEM_QUOTE[(Math.random()*BOSS_MEM_QUOTE.length)|0].replace('{q}',q):M[(Math.random()*M.length)|0];}
+  $('talkLine').textContent=line;$('talkFx').textContent='';$('talkFx').className='talk-fx';
   $('talkHint').textContent=G.anger>=1?'小心：BOSS 已經被惹怒過一次，再惹怒一次小怪會全體爆走！':'選一句話回應。效果隨機：可能幫你、可能害你，也可能直接重創 BOSS。';
   $('talkOpts').innerHTML=talk.opts.map((o,i)=>`<button class="opt" data-i="${i}"><b>${i+1}</b>${o.txt}</button>`).join('');
   showOnly('talkScreen');setTimeout(()=>{const b=$('talkOpts').querySelector('button');b&&b.focus({preventScroll:true});},30);
 }
 function pickTalk(i){
   if(!talk||talk.picked)return;const o=talk.opts[i];if(!o)return;talk.picked=true;const e=talk.e;
+  if(!e.captain&&e.variant!=null){G.talkMem=G.talkMem||{};G.talkMem[e.variant]=o.txt;}
   let fx,cls;
   if(o.kind==='good'){o.good.f();G.anger=0;fx='你的狀態提升：'+o.good.t;cls='good';}
   else if(o.kind==='hit'){e.hp-=e.maxHp*0.3;e.flash=0.4;G.anger=0;fx='BOSS 血量 -30%';cls='hit';}
@@ -2759,6 +2776,7 @@ function newGame(cls,snap,opts={}){
      skills:{},perks:{},stamps:{},rerolls:2,seals:1,banned:[],sealMode:false,st:{},enemies:[],projs:[],ebul:[],fx:[],gems:[],zones:[],strikes:[],texts:[],mines:[],pets:[],pots:[],traps:[],hazards:[],propT:3,trapT:2};
   if(!snap&&weeklyArm){G.hard=false;G.weekly={wk:weekKey(),r:weekRule().k};}else if(snap&&snap.weekly&&WKMAP[snap.weekly.r])G.weekly={wk:String(snap.weekly.wk).slice(0,10),r:snap.weekly.r};
   weeklyArm=false;G.wk=G.weekly?WKMAP[G.weekly.r]:null;
+  G.talkMem={};if(snap&&snap.talkMem&&typeof snap.talkMem==='object')for(const k in snap.talkMem)if(typeof snap.talkMem[k]==='string')G.talkMem[k]=snap.talkMem[k].slice(0,40);
   p=G.p={x:WORLD/2,y:WORLD/2,r:16,hp:CLASSES[cls].hp,maxHp:CLASSES[cls].hp,level:1,xp:0,need:xpNeed(1),atkT:0.3,face:1,fx:1,fy:0,inv:0,walk:0,moving:false,shield:0,shT:0};
   if(snap){
     Object.assign(G,{t:+snap.t||0,kills:+snap.kills||0,bossKills:+snap.bossKills||0,bossSpawned:snap?(snap.bossSpawned!=null?snap.bossSpawned|0:snap.bossKills|0):0,dup:snap&&snap.dup?{...snap.dup}:{},capKills:+snap.capKills||0,bonusDmg:+snap.bonusDmg||0,pendingLv:+snap.pendingLv||0,anger:clamp(snap.anger|0,0,1),rage:clamp(+snap.rage||0,0,40),
@@ -2785,7 +2803,7 @@ function newGame(cls,snap,opts={}){
 }
 function runSnapshot(){
   return{cls:G.cls,level:p.level,xp:Math.floor(p.xp),hp:Math.ceil(p.hp),x:Math.round(p.x),y:Math.round(p.y),t:Math.floor(G.t),kills:G.kills,bossKills:G.bossKills,bossSpawned:Math.max(0,(G.bossSpawned|0)-(G.boss&&!G.boss.dead&&!G.boss.captain?1:0)),dup:{...(G.dup||{})},capKills:G.capKills,
-    bonusDmg:G.bonusDmg,skills:{...G.skills},perks:{...G.perks},stamps:{...G.stamps},rerolls:G.rerolls,seals:G.seals,banned:[...G.banned],pendingLv:G.pendingLv,anger:G.anger,rage:Math.max(0,Math.round(G.rage)),hard:G.hard,weekly:G.weekly||null,rockSeed:G.rockSeed|0,achRun:[...(G.achRun||[])],loop:G.loop,goddessPending:G.goddessPending,clearPending:G.clearPending,blessUntil:G.blessUntil|0,blessUsed:!!G.blessUsed,blessCount:G.blessCount|0,smallBless:!!G.smallBless,revUsed:G.revUsed|0,
+    bonusDmg:G.bonusDmg,skills:{...G.skills},perks:{...G.perks},stamps:{...G.stamps},rerolls:G.rerolls,seals:G.seals,banned:[...G.banned],pendingLv:G.pendingLv,anger:G.anger,rage:Math.max(0,Math.round(G.rage)),hard:G.hard,weekly:G.weekly||null,talkMem:G.talkMem||{},rockSeed:G.rockSeed|0,achRun:[...(G.achRun||[])],loop:G.loop,goddessPending:G.goddessPending,clearPending:G.clearPending,blessUntil:G.blessUntil|0,blessUsed:!!G.blessUsed,blessCount:G.blessCount|0,smallBless:!!G.smallBless,revUsed:G.revUsed|0,
     // a boss or captain that was on the field comes back when the run continues
     bossQueue:[...(G.boss&&!G.boss.dead?[G.boss.captain?'captain':'boss']:[]),...G.bossQueue],
     bossHp:G.boss&&!G.boss.dead?Math.round(G.boss.hp/G.boss.maxHp*1000)/1000:null};
