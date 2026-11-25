@@ -1047,6 +1047,8 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 @media (orientation:landscape) and (max-height:500px){.wk-notice{padding:6px 10px;gap:2px}.wn-rule b{font-size:14px;display:inline;margin-right:6px}.wn-foot{display:none}}
 #readyScreen .rd-role{font-size:15px;line-height:1.3}#readyScreen .rd-stats .st{height:30px;padding:0 12px}#readyScreen .rd-stats i{font-size:13px}#readyScreen .rd-stats b{font-size:16px}#readyScreen .rd-desc{font-size:15px;line-height:1.6}#readyScreen #rdBack{font-size:15px}
 @media (orientation:landscape) and (max-height:500px){#readyScreen .rd-role{font-size:13.5px}#readyScreen .rd-desc{font-size:13.5px;line-height:1.5}#readyScreen .rd-stats .st{height:26px}#readyScreen .rd-stats b{font-size:14.5px}}
+.shop-ev{display:block;margin:-4px auto 2px;cursor:pointer}
+.shop-ev[hidden]{display:none}
 </style>
 
 <canvas id="game"></canvas>
@@ -1206,6 +1208,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 <section id="shopScreen" class="screen" hidden>
   <div class="screen-top"><button class="back-btn" data-back="1" aria-label="返回首頁"><span aria-hidden="true">←</span> 返回首頁</button></div>
   <h2 class="title">商店</h2>
+  <button class="event-pill shop-ev" id="shopEvPill" hidden></button>
   <div class="shop-bar"><div class="coin-pill"><i></i><span id="shopCoins">0</span></div><div class="shop-sub"><span class="shop-sub-k">試穿</span><div class="shop-cls" id="shopCls"></div></div></div>
   <div class="shop-tabs" id="shopTabs"><button data-t="cos" aria-pressed="true">裝飾</button><button data-t="expr" aria-pressed="false">表情</button><button data-t="weapon" aria-pressed="false">武器</button><button data-t="body" aria-pressed="false">外型</button></div>
   <div class="shop-tier" id="shopTier"></div>
@@ -4064,11 +4067,9 @@ function renderHome(){
   const b=SAVE.best;
   $('bestLine').innerHTML=b.level?`<svg class="crown-ic" viewBox="0 0 24 18" aria-hidden="true"><path d="M2 6l5 4 5-8 5 8 5-4-2 10H4z" fill="#ffd34d" stroke="#c48a00" stroke-width="1.2" stroke-linejoin="round"/><circle cx="12" cy="12" r="1.6" fill="#e2483d"/></svg>最佳紀錄<b>Lv ${b.level}</b>·<b>${b.kills.toLocaleString()}</b>擊殺·<b>${fmt(b.time)}</b>`:'';
   $('homeCoins').textContent=SAVE.coins.toLocaleString();
-  const evs=Object.keys(EVENTS).filter(eventActive);if(evs.length>1){$('eventPill').hidden=false;$('eventPill').style.setProperty('--c','#ff9f43');$('eventPill').textContent=evs.map(k=>`${EVENTS[k].name}（到 ${EVENTS[k].to[0]}/${EVENTS[k].to[1]}）`).join('、')+'限定造型開賣中！';}else{
-  const ev=activeEvent();$('eventPill').hidden=!ev&&!HOLIDAY_ITEMS_ALWAYS_OPEN;if(!ev&&HOLIDAY_ITEMS_ALWAYS_OPEN){$('eventPill').style.setProperty('--c','#ff9f43');$('eventPill').textContent='萬聖節、聖誕節限定造型限時開放中！';}if(ev){$('eventPill').style.setProperty('--c',EVENTS[ev].col);$('eventPill').textContent=`${EVENTS[ev].name}限定造型開賣中！（到 ${EVENTS[ev].to[0]}/${EVENTS[ev].to[1]}）`;}}
+  $('eventPill').hidden=true;
   {let txt=null,col='#e2483d';const pl=$('eventPill');
    if(xmasDay())txt='聖誕節快樂！今天寶箱金幣加倍';else if(giftWeek())txt=giftReady()?'聖誕倒數！點我拆今天的禮物盒':'聖誕倒數！明天再來拆禮物盒';else if(santaWeek())txt='聖誕週！聖誕老人隊長出沒中';
-   if(eventActive('newyear')){txt='跨年限定造型開賣中！（到 12/31）';col='#ffcf3f';}
    if(txt){pl.hidden=false;pl.style.setProperty('--c',col);pl.textContent=txt;pl.classList.toggle('ready',giftReady());}else pl.classList.remove('ready');}
   if($('ciDot')){const st=ciState();$('ciDot').hidden=st.claimed||st.bad||st.full;}
   renderWardrobe();renderSaveNote();
@@ -4159,13 +4160,19 @@ function renderShop(){
       else drawCatFit(c,110,134,x.cls||shopCls,1,t,false,3.6,false,eq);};
     draw(1.3);ANIM_PREV.shop.push({cv,draw,off:idx*0.37});});
 }
-function openShop(){renderShop();showOnly('shopScreen');$('shopScreen').scrollTop=0;}
+function saleNotice(){const evs=Object.keys(EVENTS).filter(eventActive);
+  if(evs.length>1)return{txt:evs.map(k=>`${EVENTS[k].name}（到 ${EVENTS[k].to[0]}/${EVENTS[k].to[1]}）`).join('、')+'限定造型開賣中！',col:'#ff9f43'};
+  const ev=activeEvent();if(ev)return{txt:`${EVENTS[ev].name}限定造型開賣中！（到 ${EVENTS[ev].to[0]}/${EVENTS[ev].to[1]}）`,col:EVENTS[ev].col};
+  if(HOLIDAY_ITEMS_ALWAYS_OPEN)return{txt:'萬聖節、聖誕節限定造型限時開放中！',col:'#ff9f43'};return null;}
+function paintShopSale(){const el=$('shopEvPill');if(!el)return;const n=saleNotice();el.hidden=!n;if(n){el.style.setProperty('--c',n.col);el.textContent=n.txt+' 看看 ›';}}
+function openShop(){paintShopSale();renderShop();showOnly('shopScreen');$('shopScreen').scrollTop=0;}
 function spotCard(card,scroller){if(!card)return;setTimeout(()=>{card.scrollIntoView({block:'center',behavior:'smooth'});card.classList.remove('spot');void card.offsetWidth;card.classList.add('spot');setTimeout(()=>card.classList.remove('spot'),2600);},60);}
 function goBuy(id){const x=ITEM(id);if(!x)return;SFX('click');
   if(x.tier==='ach'){achTab='shop';openAch();achTab='shop';renderAch();spotCard($('achBody').querySelector(`canvas[data-id="${id}"]`)?.closest('.shop-card'));return;}
   const k=kindOf(x);shopTab=k==='body'?'body':k==='expr'?'expr':k==='weapon'?'weapon':'cos';shopTierF='all';shopBodyF='all';if(x.cls)shopCls=x.cls;else if(k==='weapon')shopCls=wrCls;else shopCls=wrCls;
   openShop();spotCard($('shopGrid').querySelector(`canvas[data-id="${id}"]`)?.closest('.shop-card'));}
-$('shopBtn').onclick=openShop;achInit();
+$('shopBtn').onclick=openShop;
+$('shopEvPill').onclick=()=>{shopTab='cos';shopTierF='all';renderShop();const h=$('sec_e_'+(Object.keys(EVENTS).filter(k=>eventActive(k)).pop()||''))||document.querySelector('[id^="sec_e_"]');if(h)setTimeout(()=>h.scrollIntoView({block:'start',behavior:'smooth'}),60);};achInit();
 $('goalList').addEventListener('click',e=>{const b=e.target.closest('.goal-row');if(!b||b.disabled)return;const x=($('goalPanel')._g||[])[+b.dataset.gi];if(x&&x.go)goalGo(x.go);});
 $('dailyBtn').onclick=()=>{tasksIntroDone();renderDaily();showOnly('dailyScreen');$('dailyScreen').scrollTop=0;if(!SAVE.tasksHelp){SAVE.tasksHelp=1;$('dlHelp').hidden=false;}persist(false);};
 $('dlHelpBtn').onclick=()=>{$('dlHelp').hidden=false;};
