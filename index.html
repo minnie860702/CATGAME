@@ -1051,7 +1051,12 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .shop-ev[hidden]{display:none}
 .wk-go.locked{border-color:var(--line);color:var(--muted);opacity:.6;cursor:not-allowed}
 .wk-lock-note{flex-basis:100%;font:700 11.5px/1.3 var(--f-body);color:var(--muted)}
-.wk-start{flex-direction:column;align-items:stretch;gap:6px}.wk-cls{flex-wrap:nowrap}.wk-go{min-width:0}
+.wk-start{flex-direction:column;align-items:stretch;gap:6px}.wk-cls{flex-wrap:nowrap}.wk-go{min-width:0;white-space:nowrap;writing-mode:horizontal-tb}
+.wk-lock-msg{align-self:center;padding:5px 12px;border-radius:999px;background:rgba(255,211,77,.14);border:1px solid rgba(255,211,77,.45);color:#ffe08a;font:800 12.5px/1.3 var(--f-body)}
+.wk-lock-msg[hidden]{display:none}
+.wk-lock-msg.show{animation:wkMsg 2.6s ease forwards}
+@keyframes wkMsg{0%{opacity:0;transform:translateY(-4px)}10%,80%{opacity:1;transform:none}100%{opacity:0}}
+.wk-go.locked{cursor:pointer}
 </style>
 
 <canvas id="game"></canvas>
@@ -4206,7 +4211,7 @@ $('dailyBtn').onclick=()=>{tasksIntroDone();renderDaily();showOnly('dailyScreen'
 $('dlHelpBtn').onclick=()=>{$('dlHelp').hidden=false;};
 $('dlHelpOk').onclick=()=>{$('dlHelp').hidden=true;};
 $('dlHelp').addEventListener('click',e=>{if(e.target===$('dlHelp'))$('dlHelp').hidden=true;});
-$('dlList').parentElement.addEventListener('click',e=>{const b=e.target.closest('[data-dl]');if(b){dailyClaim(b.dataset.dl);return;}const w=e.target.closest('[data-wk]');if(w){weeklyClaim(+w.dataset.wk);return;}const c=e.target.closest('[data-wkc]');if(c)weeklyStart(c.dataset.wkc);});
+$('dlList').parentElement.addEventListener('click',e=>{const b=e.target.closest('[data-dl]');if(b){dailyClaim(b.dataset.dl);return;}const w=e.target.closest('[data-wk]');if(w){weeklyClaim(+w.dataset.wk);return;}const lk=e.target.closest('[data-wklock]');if(lk){const m=$('wkLockMsg');if(m){m.hidden=false;m.classList.remove('show');void m.offsetWidth;m.classList.add('show');clearTimeout(m._t);m._t=setTimeout(()=>{m.hidden=true;},2600);}return;}const c=e.target.closest('[data-wkc]');if(c)weeklyStart(c.dataset.wkc);});
 const SND_SVG={music:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3" fill="currentColor"/><circle cx="17" cy="16" r="3" fill="currentColor"/>',sfx:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'};
 function sndIcon(k,on){return SND_SVG[k]+(on?'':'<path d="M3 3l18 18" stroke-width="2.6"/>')+'</svg>';}
 {const cp=$('homeCoinPill'),tip=$('coinTip');let tm=0;const show=e=>{e&&e.stopPropagation();tip.hidden=false;clearTimeout(tm);tm=setTimeout(()=>tip.hidden=true,2600);};cp.onclick=show;cp.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show();}};document.addEventListener('click',()=>{tip.hidden=true;});}
@@ -4266,9 +4271,9 @@ function renderDaily(){const D=dailyEnsure();D.seen=true;
   $('dlReset').textContent=`還有約 ${h} 小時換新任務`;renderWeekly();$('dlCoins').textContent=SAVE.coins.toLocaleString();dlyDot();renderGoals();}
 function renderWeekly(){const W=weeklyEnsure(),R=weekRule(),end=weekMonday();end.setDate(end.getDate()+7);const days=Math.max(1,Math.ceil((end-NOW())/864e5));
   const tiers=WK_TIERS.map(([lv,r],i)=>{const ok=W.best>=lv,got=W.got[i];return got?`<span class="wk-tier got">Lv${lv}<b>✓</b></span>`:ok?`<button class="wk-tier ok" data-wk="${i}">Lv${lv}<b><i class="coin-ic"></i>${r}</b></button>`:`<span class="wk-tier">Lv${lv}<b><i class="coin-ic"></i>${r}</b></span>`;}).join('');
-  const cls=CLS_ALL.map(c=>c==='gard'&&!gardOpen()?`<button class="btn wk-go locked" disabled title="三隻貓都到 Lv50 解鎖">🔒 ${CSHORT[c]}</button>`:`<button class="btn wk-go" data-wkc="${c}" style="--c:${CLASSES[c].color}">${CSHORT[c]}</button>`).join('')+(gardOpen()?'':'<span class="wk-lock-note">園丁貓要三隻貓都到 Lv50 才會解鎖</span>');
+  const cls=CLS_ALL.map(c=>c==='gard'&&!gardOpen()?`<button class="btn wk-go locked" data-wklock="1" aria-label="園丁貓尚未解鎖">🔒 ${CSHORT[c]}</button>`:`<button class="btn wk-go" data-wkc="${c}" style="--c:${CLASSES[c].color}">${CSHORT[c]}</button>`).join(''),lockNote='<span class="wk-lock-msg" id="wkLockMsg" hidden>🔒 園丁貓要三隻貓都到 Lv50 才會解鎖</span>';
   $('wkBox').innerHTML=`<div class="wk-card"><div class="wk-top"><span class="wk-ic">${R.ic}</span><div class="wk-tx"><b>${R.n}</b><small>${R.d}</small></div><span class="wk-left">剩 ${days} 天</span></div>
-    <div class="wk-best">本週最佳 <b>${W.best?'Lv '+W.best:'還沒挑戰'}</b></div><div class="wk-tiers">${tiers}</div><div class="wk-start"><span>用哪隻貓挑戰？</span><div class="wk-cls">${cls}</div></div></div>`;}
+    <div class="wk-best">本週最佳 <b>${W.best?'Lv '+W.best:'還沒挑戰'}</b></div><div class="wk-tiers">${tiers}</div><div class="wk-start"><span>用哪隻貓挑戰？</span><div class="wk-cls">${cls}</div>${lockNote}</div></div>`;}
 function weeklyClaim(i){const W=weeklyEnsure(),t=WK_TIERS[i];if(!t||W.best<t[0]||W.got[i])return;W.got[i]=true;W.tot=(W.tot||0)+1;SAVE.coins+=t[1];SFX('coin');persist();achCheck();renderDaily();}
 function wkNoticeHTML(){const R=weekRule();return `<span class="wn-badge">🏅 每週挑戰模式</span><span class="wn-rule"><b>${R.ic} ${R.n}</b>${R.d}</span><span class="wn-foot">這局的等級會算進本週挑戰獎勵</span>`;}
 function paintStartMode(){const on=weeklyArm;for(const id of['rdWk','cfWk']){const el=$(id);if(!el)continue;el.hidden=!on;if(on)el.innerHTML=wkNoticeHTML();}
