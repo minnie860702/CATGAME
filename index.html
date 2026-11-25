@@ -2312,7 +2312,7 @@ function openTalk(e){
   $('talkName').textContent=e.name;let line=lines[(Math.random()*lines.length)|0];
   if((G.loop||0)>=1&&!e.captain){const M=BOSS_MEMORY[e.variant]||BOSS_MEMORY[0],q=G.talkMem&&G.talkMem[e.variant];line=q&&Math.random()<0.5?BOSS_MEM_QUOTE[(Math.random()*BOSS_MEM_QUOTE.length)|0].replace('{q}',q):M[(Math.random()*M.length)|0];}
   $('talkLine').textContent=line;$('talkFx').textContent='';$('talkFx').className='talk-fx';
-  $('talkHint').textContent=G.anger>=1?'小心：BOSS 已經被惹怒過一次，再惹怒一次小怪會全體爆走！':'選一句話回應。效果隨機：可能幫你、可能害你，也可能直接重創 BOSS。';
+  $('talkHint').textContent=G.anger>=1?'小心：BOSS 已經被惹怒過一次，再惹怒一次小怪會全體爆走！':'';$('talkHint').hidden=!(G.anger>=1);
   $('talkOpts').innerHTML=talk.opts.map((o,i)=>`<button class="opt" data-i="${i}"><b>${i+1}</b>${o.txt}</button>`).join('');
   showOnly('talkScreen');setTimeout(()=>{const b=$('talkOpts').querySelector('button');b&&b.focus({preventScroll:true});},30);
 }
