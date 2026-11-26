@@ -1057,6 +1057,16 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .wk-lock-msg.show{animation:wkMsg 2.6s ease forwards}
 @keyframes wkMsg{0%{opacity:0;transform:translateY(-4px)}10%,80%{opacity:1;transform:none}100%{opacity:0}}
 .wk-go.locked{cursor:pointer}
+.lv-sk{position:fixed;inset:0;z-index:85;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;background:rgba(5,12,8,.72)}
+.lv-sk[hidden]{display:none}
+.lv-sk-box{width:min(720px,100%);max-height:calc(100dvh - 24px);box-sizing:border-box;display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.5)}
+#lvSkillsBody{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.lv-sk-box .btn{align-self:center;min-width:160px}
+@media (orientation:landscape) and (max-height:500px){.lv-sk{padding:6px}.lv-sk-box{padding:8px 10px;gap:6px;max-height:calc(100dvh - 12px)}.lv-sk-box .btn{padding:6px 16px}.lv-sk .pt-grid{grid-template-columns:repeat(8,minmax(0,1fr))}}
+@media (max-width:520px){.lv-tools{flex-wrap:nowrap;width:100%;max-width:420px;gap:8px}.lv-tools .btn{flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;white-space:nowrap;font-size:14px}}
+.ach-gift{display:block;margin-top:3px;font:800 11.5px/1.3 var(--f-body);color:#ffb347}
+.shop-card .btn.go-ach.tro{color:#ffcf8a;border-color:rgba(255,179,71,.55);background:rgba(255,179,71,.1);white-space:normal;line-height:1.3}
+.btn.tro-need{white-space:normal;line-height:1.3;font-size:12.5px}
 </style>
 
 <canvas id="game"></canvas>
@@ -1081,6 +1091,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 <div id="coach" aria-live="polite"><span class="ico"></span><span><small></small><span class="tx"></span></span></div>
 <div id="achToast" aria-live="polite"></div>
 <div id="dlyToast" aria-live="polite"></div>
+<div class="lv-sk" id="lvSkills" hidden><div class="lv-sk-box" role="dialog" aria-label="目前技能"><div id="lvSkillsBody" class="pt-wrap"></div><button class="btn primary" id="lvSkillsClose">回去選技能</button></div></div>
 <div id="shareModal" hidden><div class="sh-box" role="dialog" aria-label="分享紀錄"><label class="sh-title">稱號<select id="shareTitle"></select></label><img id="shareImg" alt="這局的紀錄圖"><p class="sh-hint" id="shareHint"></p><div class="row sh-btns"><button class="btn primary" id="shareSave">存圖</button><button class="btn" id="shareClose">關閉</button></div></div></div>
 
 <section id="startScreen" class="screen">
@@ -1117,7 +1128,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
   <h2 class="title" id="lvTitle">升級！Lv 2</h2>
   <p class="sub" id="lvSub"></p>
   <div id="choices"></div>
-  <div class="lv-tools"><button class="btn" id="rerollBtn">重抽</button><button class="btn" id="sealBtn">封印</button></div>
+  <div class="lv-tools"><button class="btn" id="rerollBtn">重抽</button><button class="btn" id="sealBtn">封印</button><button class="btn" id="lvSkillsBtn">目前技能</button></div>
   <div class="spacer"></div>
 </section>
 
@@ -1417,6 +1428,15 @@ COS.push(
    c.fillStyle='#7ab8ff';c.beginPath();c.moveTo(3,3);c.lineTo(5.6,6);c.lineTo(3,10.5);c.lineTo(0.4,6);c.closePath();c.fill();c.fillStyle='#c8e6ff';c.beginPath();c.moveTo(3,3);c.lineTo(5.6,6);c.lineTo(3,6.8);c.closePath();c.fill();ell(c,3,3.2,0.9,0.9,'#d8dee8');if(Math.sin(t*4)>0.6)star(c,5.6,4.2,1,'#ffffff');}},
  {id:'n_watch',name:'懷錶項鍊',slot:'neck',tier:'rare',draw(c,t){c.strokeStyle='#d8a422';c.lineWidth=0.9;c.setLineDash([1.2,0.8]);c.beginPath();c.arc(3,-6,10,0.6,Math.PI-0.6);c.stroke();c.setLineDash([]);ell(c,3,2.4,0.9,0.9,'#d8a422');ell(c,3,6.6,3.8,3.8,'#e8b400');ell(c,3,6.6,3,3,'#fffaf0');
    c.strokeStyle='#5a3a1e';c.lineWidth=0.6;for(const[a,l]of[[t*0.5,2.2],[t*4,2.6]]){c.beginPath();c.moveTo(3,6.6);c.lineTo(3+Math.cos(a-Math.PI/2)*l,6.6+Math.sin(a-Math.PI/2)*l);c.stroke();}ell(c,3,6.6,0.5,0.5,'#5a3a1e');ell(c,1.8,5.2,0.8,0.5,'rgba(255,255,255,.7)');}},
+ {id:'n_goldchain',name:'金色大項鍊',slot:'neck',tier:'trophy',from:'rich_5',draw(c,t){for(let i=0;i<11;i++){const a=0.5+i*((Math.PI-1)/10);ell(c,3+Math.cos(a)*10.2,-6+Math.sin(a)*10.2,1.7,1.2,i%2?'#e8b400':'#ffd34d');}c.globalAlpha=0.3+0.15*Math.sin(t*3);ell(c,3,6.6,5.6,5.6,'#ffe27a');c.globalAlpha=1;ell(c,3,6.6,4.2,4.2,'#e8b400');ell(c,3,6.6,3.2,3.2,'#ffd34d');
+   ell(c,3,7.4,1.2,1,'#b07a00');for(const[x,y]of[[1.6,5.4],[2.6,4.8],[3.6,4.8],[4.6,5.4]])ell(c,x,y,0.5,0.55,'#b07a00');if(Math.sin(t*4)>0.6)star(c,5.6,4.4,1.1,'#ffffff');}},
+ {id:'f_bpipe',name:'紳士泡泡菸斗',slot:'face',tier:'trophy',from:'rich_5',draw(c,t){c.strokeStyle='#4a2c14';c.lineWidth=2;c.lineCap='round';c.beginPath();c.moveTo(8.4,-2.6);c.quadraticCurveTo(12.5,-0.6,15,-2.2);c.stroke();c.fillStyle='#7a4a24';c.beginPath();c.roundRect(13.6,-8,5.2,6.6,1.8);c.fill();c.fillStyle='#9a6234';c.fillRect(14.2,-7.4,1.2,5.4);ell(c,16.2,-8,2.6,1,'#2e1a0c');c.fillStyle='#ffd34d';c.fillRect(13.6,-3.6,5.2,1.1);
+   for(let i=0;i<3;i++){const k=(t*0.55+i/3)%1;c.globalAlpha=0.9*(1-k);const r=1+k*2;const bx=16.2+Math.sin(t*2+i)*1.8,by=-10-k*11;ell(c,bx,by,r,r,'rgba(190,235,255,.6)');c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=0.5;c.beginPath();c.arc(bx,by,r,0,TAU);c.stroke();ell(c,bx-r*0.35,by-r*0.35,r*0.25,r*0.2,'#ffffff');}c.globalAlpha=1;}},
+ {id:'h_band999',name:'爆擊頭帶',slot:'head',tier:'trophy',from:'h_onehit',draw(c,t){const w=Math.sin(t*6)*1.6;c.fillStyle='#e2483d';c.beginPath();c.moveTo(-7,-13.4);c.quadraticCurveTo(-14,-12+w,-17,-8+w);c.lineTo(-15,-7+w);c.quadraticCurveTo(-12,-11,-7,-11.4);c.closePath();c.moveTo(-7,-12.4);c.quadraticCurveTo(-13,-9-w,-15,-4-w);c.lineTo(-13,-4.2-w);c.quadraticCurveTo(-11,-8,-7,-10.6);c.closePath();c.fill();
+   c.fillStyle='#e2483d';c.beginPath();c.roundRect(-8,-16,20,4.6,2);c.fill();c.fillStyle='#ffffff';c.font='900 3.6px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('99999',2,-13.6);}},
+ {id:'b_mosscape',name:'青苔石披風',slot:'back',tier:'trophy',from:'h_statue',draw(c,t){const w=Math.sin(t*2)*0.8;c.fillStyle='#8f969c';c.beginPath();c.moveTo(-6,-2);c.quadraticCurveTo(-21,6,-22+w,18);c.lineTo(-4,17);c.closePath();c.fill();c.strokeStyle='#6f767c';c.lineWidth=0.8;c.beginPath();c.moveTo(-10,4);c.lineTo(-14,9);c.lineTo(-11,13);c.moveTo(-17,12);c.lineTo(-19,16);c.stroke();
+   for(const[x,y,r]of[[-8,1,2.4],[-15,8,2.8],[-20,16,2.2],[-9,14,2],[-12,4,1.6]])ell(c,x,y,r,r*0.75,'#5fa84a');ell(c,-16,7.4,1,0.8,'#8fd06a');c.fillStyle='#6f767c';c.fillRect(-7,-3,6,3);}},
+ {id:'h_explorer',name:'探險家帽',slot:'head',tier:'trophy',from:'mob_all',draw(c){ell(c,2,-15,16,4,'#c9b07a');c.fillStyle='#e0c890';c.beginPath();c.ellipse(2,-16,10.5,9,0,Math.PI,0);c.fill();c.fillStyle='#7a5a2a';c.fillRect(-8.5,-17.6,21,2.6);c.fillStyle='#f0dca8';c.beginPath();c.ellipse(-1,-21,3,2,-0.4,0,TAU);c.fill();ell(c,2,-25,1.4,1,'#b8985a');}},
  {id:'b_phoenix',name:'鳳凰之翼',slot:'back',tier:'epic',draw(c,t){c.save();c.translate(-6,0);c.rotate(-0.3-Math.sin(t*7)*0.15);for(const[k,col]of[[1,'#ff5a3c'],[0.75,'#ff9f1c'],[0.5,'#ffd34d']]){c.fillStyle=col;c.beginPath();c.moveTo(0,2);c.quadraticCurveTo(-18*k,-6*k,-30*k,-24*k);c.quadraticCurveTo(-22*k,-10*k,-26*k,-2*k);c.quadraticCurveTo(-16*k,0,-22*k,10*k);c.quadraticCurveTo(-10*k,6*k,0,6);c.closePath();c.fill();}c.restore();for(let i=0;i<3;i++){const k=(t*0.9+i/3)%1;ell(c,-16-i*4,-4-k*16,1.2,1.2,`rgba(255,200,80,${1-k})`);}}}
 );
 COS.push(
@@ -1582,7 +1602,8 @@ COS.push(...OUTFITS);
 const MYTH_OUTFIT={war:'o_w_dragon',mage:'o_m_arcane',arch:'o_a_moon',gard:'o_g_flora'};
 for(const x of COS){x.tier=x.tier||(x.rare?'rare':'common');x.rare=x.tier!=='common';}
 const COSMAP={};for(const x of COS)COSMAP[x.id]=x;
-const TIER={common:{name:'普通',price:150,col:'#ffd34d'},rare:{name:'稀有',price:400,col:'#c9a7ff'},epic:{name:'史詩',price:null,col:'#ff9a6b'},myth:{name:'神話',price:null,col:'#ff7af0'},event:{name:'節日限定',price:350,col:'#ff9f43'},login:{name:'簽到限定',price:null,col:'#7fdbff'},ach:{name:'成就限定',price:null,col:'#4fe0a8'}};
+const ACH_GIFT={};for(const x of COS)if(x.tier==='trophy')(ACH_GIFT[x.from]=ACH_GIFT[x.from]||[]).push(x.name);
+const TIER={common:{name:'普通',price:150,col:'#ffd34d'},rare:{name:'稀有',price:400,col:'#c9a7ff'},epic:{name:'史詩',price:null,col:'#ff9a6b'},myth:{name:'神話',price:null,col:'#ff7af0'},event:{name:'節日限定',price:350,col:'#ff9f43'},login:{name:'簽到限定',price:null,col:'#7fdbff'},ach:{name:'成就限定',price:null,col:'#4fe0a8'},trophy:{name:'成就獎勵',price:null,col:'#ffb347'}};
 const BOSS_MYTH={5:'h_icecrown',6:'n_lavaheart',7:'f_thunder',8:'b_shadow',9:'b_worldleaf'};
 // holiday windows (month, day); a window may wrap past New Year
 const EVENTS={halloween:{name:'萬聖節',from:[10,15],to:[11,30],col:'#ff8a3d',retired:true},xmas:{name:'聖誕節',from:[11,23],to:[12,31],col:'#e2483d'},newyear:{name:'跨年',from:[12,28],to:[12,31],col:'#ffcf3f'}};
@@ -1596,9 +1617,9 @@ const HOLIDAY_ITEMS_ALWAYS_OPEN=false;
 function eventActive(k){if(FORCE_EVENT!=null)return FORCE_EVENT===k;const e=EVENTS[k],d=NOW();if(e.retired)return false;const v=(d.getMonth()+1)*100+d.getDate(),a=e.from[0]*100+e.from[1],b=e.to[0]*100+e.to[1];return a<=b?(v>=a&&v<=b):(v>=a||v<=b);}
 function activeEvent(){return Object.keys(EVENTS).find(eventActive)||null;}
 const evRange=k=>{const e=EVENTS[k];return `${e.from[0]}/${e.from[1]}～${e.to[0]}/${e.to[1]}`;};
-const canBuy=x=>x.tier==='ach'||x.tier==='login'?false:x.tier==='event'?(HOLIDAY_ITEMS_ALWAYS_OPEN||eventActive(x.event)):!(x.tier==='epic'||x.tier==='myth');
+const canBuy=x=>x.tier==='ach'||x.tier==='login'||x.tier==='trophy'?false:x.tier==='event'?(HOLIDAY_ITEMS_ALWAYS_OPEN||eventActive(x.event)):!(x.tier==='epic'||x.tier==='myth');
 const evLock=k=>{const e=EVENTS[k],d=NOW();if(e.retired)return '已結束';const v=(d.getMonth()+1)*100+d.getDate();return v<e.from[0]*100+e.from[1]?`${e.from[0]}/${e.from[1]} 開賣`:'今年已結束';};
-const lockText=x=>x.tier==='ach'?'成就兌換':x.tier==='login'?(x.month?x.month+' 月簽到限定':'每日簽到獎勵'):x.tier==='event'?evLock(x.event):x.tier==='myth'?(x.slot==='outfit'?'Lv60+ BOSS 限定':BOSS_NAMES[x.boss]+' 限定'):'Lv50+ BOSS 寶箱';
+const lockText=x=>x.tier==='trophy'?`成就「${ACHMAP[x.from]?ACHMAP[x.from].name:'？'}」獎勵`:x.tier==='ach'?'成就兌換':x.tier==='login'?(x.month?x.month+' 月簽到限定':'每日簽到獎勵'):x.tier==='event'?evLock(x.event):x.tier==='myth'?(x.slot==='outfit'?'Lv60+ BOSS 限定':BOSS_NAMES[x.boss]+' 限定'):'Lv50+ BOSS 寶箱';
 const SLOTNAME=Object.fromEntries(SLOTS);SLOTNAME.outfit='服裝';
 const EYE='#1d2420';
 const EXPRS=[
@@ -1858,7 +1879,7 @@ const ACH=[
  H('h_broke','一貧如洗','把金幣花到剩 0',5,()=>SAVE.coins===0&&stat('spent')>=1000),
  H('h_streak','三連勝','連續 3 局都到達 Lv50',20,()=>stat('streakMax')>=3),
  H('h_quit','說走就走','開局 1 分鐘內就結束這局',5,e=>e.end&&G.quit&&G.t<60),
- H('h_onehit','九九九九九九','單次打出 999,999 傷害',29,()=>hitMax()>=999999),
+ H('h_onehit','九九九九九','單次打出 99,999 傷害',20,()=>hitMax()>=99999),
  H('h_expo','花園博覽會','園丁貓同時種著 5 種不同的盆栽',15,()=>runOn()&&G.cls==='gard'&&['turret','spring','teaser','mint','whip'].every(k=>G.pots.some(q=>q.kind===k))),
  H('h_g3','女神的常客','同一局見到湖之女神 3 次',12,()=>!!G&&(G.goddessN||0)>=3),
  H('h_222','喵喵喵日','2 月 22 日（貓之日）玩一局',22,()=>today(1,22)),
@@ -1929,7 +1950,9 @@ function addRunStats(){if(!G||G.statsAdded)return;G.statsAdded=1;const s=SAVE.st
 function achTrack(){const s=SAVE.stats;
   if(runOn()){const d=ymd(NOW());if(s.lastDay!==d){s.lastDay=d;s.days++;}for(const k in G.perks)if(PERKMAP[k]&&PERKMAP[k].kind==='mystery'&&!s.myst.includes(k))s.myst.push(k);}
   const c=SAVE.coins;if(achLastCoins!=null){if(c>achLastCoins)s.earned+=c-achLastCoins;else s.spent+=achLastCoins-c;}achLastCoins=c;}
-function achCheck(end){if(!SAVE.ach)return 0;try{achTrack();}catch(_){}const e={end:!!end};let n=0;for(const a of ACH){if(SAVE.ach[a.id]||(a.gone&&a.gone()))continue;let ok=false;try{ok=a.ok?!!a.ok(e):a.v()>=goalOf(a);}catch(_){}if(ok){SAVE.ach[a.id]=Date.now();n++;achNote(a);achToast(a);}}if(n){persist();achDot();}return n;}
+function achCheck(end){if(!SAVE.ach)return 0;try{achTrack();}catch(_){}const e={end:!!end};let n=0;for(const a of ACH){if(SAVE.ach[a.id]||(a.gone&&a.gone()))continue;let ok=false;try{ok=a.ok?!!a.ok(e):a.v()>=goalOf(a);}catch(_){}if(ok){SAVE.ach[a.id]=Date.now();n++;achNote(a);achToast(a);}}if(n){persist();achDot();achGifts();}return n;}
+function achGifts(quiet){const got=[];for(const x of COS)if(x.tier==='trophy'&&SAVE.ach&&SAVE.ach[x.from]&&!owns(x.id)){SAVE.wardrobe.owned.push(x.id);got.push(x);}
+  if(got.length){persist();if(!quiet)banner('獲得成就獎勵造型！',got.map(x=>x.name).join('、'));}return got;}
 function achUnlock(id){if(SAVE.ach[id])return;SAVE.ach[id]=Date.now();if(ACHMAP[id])achNote(ACHMAP[id]);achToast(ACHMAP[id]);persist();achDot();}
 function achDot(){const d=$('achDot');if(d)d.hidden=!achUnclaimed().length&&achDone().length<=(SAVE.achSeen||0);}
 const achCol=a=>ACH_CATS.find(c=>c[0]===a.cat)[2];
@@ -1955,14 +1978,14 @@ function renderAch(){
     h+=list.map(([a])=>{const got=!!SAVE.ach[a.id],hid=a.cat==='hid'&&!got;let prog='';
       if(!got&&a.v){const g=goalOf(a),v=Math.max(0,Math.min(a.v(),g));prog=`<span class="ach-prog"><span class="ach-bar"><i style="width:${(v/g*100).toFixed(1)}%"></i></span><em>${achFmt(a,v)} / ${achFmt(a,g)}</em></span>`;}
       const unclaimed=got&&!cl[a.id],rw=unclaimed?`<button class="btn ach-claim" data-claim="${a.id}">領取 <i class="acoin"></i>${a.r}</button>`:got?`<span class="ach-rw ok" title="已領取"><svg class="ach-ck" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="6" fill="#4fe0a8"/><path d="M3.2 6.2l1.8 1.8 3.8-3.9" fill="none" stroke="#0d2a1d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><i class="acoin"></i>${a.r}</span>`:`<span class="ach-rw"><i class="acoin"></i>${a.r}</span>`;
-      return `<div class="ach-row${got?' got':''}${unclaimed?' claim':got?' done':''}" style="--c:${achCol(a)}">${medal(got,hid)}<div class="ach-tx"><b>${hid?'？？？':a.name}${a.ser&&!hid?`<span class="ach-step">第 ${a.step+1} 階</span>`:''}</b><small>${hid?'隱藏成就':a.desc}</small>${prog}</div>${rw}</div>`;}).join('');
+      return `<div class="ach-row${got?' got':''}${unclaimed?' claim':got?' done':''}" style="--c:${achCol(a)}">${medal(got,hid)}<div class="ach-tx"><b>${hid?'？？？':a.name}${a.ser&&!hid?`<span class="ach-step">第 ${a.step+1} 階</span>`:''}</b><small>${hid?'隱藏成就':a.desc}</small>${!hid&&ACH_GIFT[a.id]?`<span class="ach-gift">🎁 ${ACH_GIFT[a.id].join('、')}</span>`:''}${prog}</div>${rw}</div>`;}).join('');
     const ol=body.querySelector('.ach-list'),keep=ol&&body.dataset.k===achTab+achCat?ol.scrollTop:0;
     body.classList.add('is-list');body.innerHTML=h+'</div>';body.dataset.k=achTab+achCat;if(keep)body.querySelector('.ach-list').scrollTop=keep;return;
   }
   body.classList.remove('is-list');body.dataset.k='';
   const pc=achPc||(SAVE.run&&SAVE.run.cls)||(G&&G.cls)||'war';achPc=pc;
   const AF=[['all','全部'],['head','頭飾'],['face','臉部'],['neck','頸部'],['back','背部'],['new','未擁有']];
-  const allItems=COS.filter(x=>x.tier==='ach'),cntOf=k=>k==='all'?null:allItems.filter(x=>k==='new'?!owns(x.id):x.slot===k).length;
+  const allItems=COS.filter(x=>x.tier==='ach'),troItems=COS.filter(x=>x.tier==='trophy'),cntOf=k=>k==='all'?null:[...allItems,...troItems].filter(x=>k==='new'?!owns(x.id):x.slot===k).length;
   const filt=`<div class="cx-sub ach-filter">`+AF.map(([k,n])=>{const c=cntOf(k);return `<button data-af="${k}" style="--c:${k==='new'?'#ffd34d':TIER.ach.col}" aria-pressed="${k===achF}">${n}${c!=null?` <small>${c}</small>`:''}</button>`;}).join('')+'</div>';
   let h='';{h+=`<h3 class="ach-h">永久能力<small>只對這隻貓有效</small></h3><div class="cx-sub">`+PERM_CLS.map(c=>`<button data-pc="${c}" style="--c:${CLASSES[c].color}" aria-pressed="${c===pc}">${CNAME[c]}</button>`).join('')+'</div><div class="ach-list">';
   h+=PERM.map(P=>{const l=permLv(P.k,pc),c=pCost(P,l),M=pMax(P);
@@ -1975,6 +1998,10 @@ function renderAch(){
     const btn=own?(worn?'<button class="btn" disabled>使用中</button>':`<button class="btn" data-aeq="${x.id}">穿上</button>`):`<button class="btn ${x.price>bal?'poor':'primary'}" data-abuy="${x.id}"${x.price>bal?' disabled':''}>兌換 <i class="acoin"></i>${x.price}</button>`;
     return `<div class="shop-card${own?' owned':''}"><canvas width="220" height="220" data-id="${x.id}"></canvas><h4>${x.name}</h4><div class="tag" style="color:${TIER.ach.col}">${SLOTNAME[x.slot]}</div>${btn}</div>`;}).join('');
   h+='</div>';
+  const tro=troItems.filter(x=>achF==='all'?true:achF==='new'?!owns(x.id):x.slot===achF);
+  if(tro.length){h+='<h3 class="ach-h">成就獎勵造型<small>達成指定成就就會自動送你</small></h3><div class="shop-grid">'+tro.map(x=>{const own=owns(x.id),worn=SAVE.wardrobe.eq[x.slot]===x.id,a=ACHMAP[x.from];
+    const btn=own?(worn?'<button class="btn" disabled>使用中</button>':`<button class="btn" data-aeq="${x.id}">穿上</button>`):`<button class="btn tro-need" data-atro="${x.id}" disabled>達成「${a?a.name:'？'}」</button>`;
+    return `<div class="shop-card${own?' owned':''}"><canvas width="220" height="220" data-id="${x.id}"></canvas><h4>${x.name}</h4><div class="tag" style="color:${TIER.trophy.col}">${SLOTNAME[x.slot]}</div>${btn}</div>`;}).join('')+'</div>';}
   body.innerHTML=h;
   body.querySelectorAll('canvas').forEach((cv,idx)=>{const x=COSMAP[cv.dataset.id],c=cv.getContext('2d'),eq={head:null,face:null,neck:null,back:null,expr:'e_default',outfit:null};eq[x.slot]=x.id;
     const draw=t=>{c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,220,220);drawCatFit(c,110,134,'war',1,t,false,3.6,false,eq);};draw(1.3);ANIM_PREV.ach.push({cv,draw,off:idx*0.37});});
@@ -1982,7 +2009,7 @@ function renderAch(){
 let achFromShop=null;
 function achBackLabel(){const t=achFromShop?'返回商店':'返回首頁';$('achScreen').querySelectorAll('[data-back]').forEach(b=>{b.innerHTML=b.classList.contains('back-btn')?'<span aria-hidden="true">←</span> '+t:t;b.setAttribute('aria-label',t);});}
 function goAchItem(id,fromHome){achFromShop=fromHome?null:{id,y:$('shopScreen').scrollTop};achBackLabel();achCheck();achTab='shop';achF=(COSMAP[id]&&COSMAP[id].slot)||'all';$('achBody').dataset.k='';renderAch();achBackLabel();showOnly('achScreen');
-  const btn=$('achBody').querySelector(`[data-abuy="${id}"],[data-aeq="${id}"]`),card=btn&&btn.closest('.shop-card');
+  const btn=$('achBody').querySelector(`[data-abuy="${id}"],[data-aeq="${id}"],[data-atro="${id}"]`),card=btn&&btn.closest('.shop-card');
   if(card){setTimeout(()=>{card.scrollIntoView({block:'center'});card.classList.remove('ach-hl');void card.offsetWidth;card.classList.add('ach-hl');},60);}else $('achScreen').scrollTop=0;}
 function openAch(){achFromShop=null;achF='all';achBackLabel();achCheck();$('achBody').dataset.k='';{const u=achUnclaimed();if(u.length){achTab='list';if(!u.some(a=>a.cat===achCat))achCat=u[0].cat;}}SAVE.achSeen=achDone().length;try{localStorage.setItem(LS_KEY,JSON.stringify(SAVE));}catch(_){}achDot();renderAch();showOnly('achScreen');$('achScreen').scrollTop=0;}
 function achInit(){
@@ -4022,7 +4049,7 @@ function kvLayout(){const sp=document.getElementById('splash');if(!sp)return;con
   art.style.width=w+'px';art.style.height=h+'px';art.style.left=left+'px';art.style.top=top+'px';
   sp.dataset.mode=w<W-1?'wide':h<H-1?'tall':'cover';const pw=sp.querySelector('.sp-paw');if(pw){const k=w/IW,PX=785,PY=-10,PW=200,PH=150;pw.style.left=(left+PX*k)+'px';pw.style.top=(top+PY*k)+'px';pw.style.width=PW*k+'px';pw.style.height=PH*k+'px';pw.style.backgroundImage='url('+KV_M+')';pw.style.backgroundSize=w+'px '+h+'px';pw.style.backgroundPosition=(-PX*k)+'px '+(-PY*k)+'px';}const hn=sp.querySelector('.sp-hint');if(hn){const tl=sp.dataset.mode==='tall';hn.style.top=tl?Math.min(H-60,top+h+H*0.06)+'px':'';hn.style.bottom=tl?'auto':'';}const fl=sp.querySelector('.sp-fill');if(fl)fl.style.backgroundImage='url('+(sp.dataset.mode==='tall'?KV_P:KV_M)+')';}
 window.addEventListener('resize',kvLayout);kvLayout();
-function showOnly(id){hideTip();{const h=document.getElementById('dlHelp');if(h)h.hidden=true;}if(id)coachShow(null);if(G&&TAPLOCK_SCREENS.has(id)&&$(id).hidden)tapLock();for(const s of['startScreen','levelScreen','pauseScreen','overScreen','chestScreen','confirmScreen','readyScreen','clearScreen','talkScreen','helpScreen','codexScreen','shopScreen','goddessScreen','historyScreen','checkinScreen','achScreen','dailyScreen'])$(s).hidden=s!==id;}
+function showOnly(id){hideTip();{const k=document.getElementById('lvSkills');if(k)k.hidden=true;}{const h=document.getElementById('dlHelp');if(h)h.hidden=true;}if(id)coachShow(null);if(G&&TAPLOCK_SCREENS.has(id)&&$(id).hidden)tapLock();for(const s of['startScreen','levelScreen','pauseScreen','overScreen','chestScreen','confirmScreen','readyScreen','clearScreen','talkScreen','helpScreen','codexScreen','shopScreen','goddessScreen','historyScreen','checkinScreen','achScreen','dailyScreen'])$(s).hidden=s!==id;}
 
 /* chests */
 let curChest=null;
@@ -4091,7 +4118,7 @@ function tasksGate(){const b=$('dailyBtn');if(!b)return;
   if(SAVE.tasksOn&&!SAVE.tasksIntro&&!b.querySelector('.task-tip')){b.classList.add('coach-hl');const t=document.createElement('span');t.className='task-tip';t.innerHTML='<b>新功能！</b>每日任務和每週挑戰在這裡，完成就有金幣拿<i>點一下看看</i>';b.appendChild(t);}}
 function tasksIntroDone(){if(SAVE.tasksIntro)return;SAVE.tasksIntro=1;persist(false);const b=$('dailyBtn');b.classList.remove('coach-hl');const t=b.querySelector('.task-tip');if(t)t.remove();}
 function renderHome(){
-  achCheck();achDot();tasksGate();dlyDot();const r=SAVE.run;
+  achCheck();achGifts();achDot();tasksGate();dlyDot();const r=SAVE.run;
   {const open=gardOpen();if(open&&!SAVE.gardOpen){SAVE.gardOpen=true;persist();}const card=document.querySelector('.cat[data-cls="gard"]');if(card){card.classList.toggle('locked',!open);const L=card.querySelector('.lock');if(L&&!open)L.innerHTML='🔒 <b>三隻貓都到 Lv50 解鎖</b><div class="lv">'+gardNeed().map(o=>`<span class="${o.lv>=50?'ok':''}">${CSHORT[o.k]} ${Math.min(o.lv,50)}/50</span>`).join('')+'</div>';}}
   $('contPanel').hidden=!r;
   $('hardToggle').hidden=!SAVE.hardUnlocked;
@@ -4154,13 +4181,13 @@ $('wrShop').onclick=()=>{shopTab=BODY_SLOTS[wrCat]?'body':['expr','weapon'].incl
 
 /* shop */
 let shopTab='cos',shopCls='war';
-const TIER_ORDER={common:0,rare:1,event:2,login:3,epic:4,myth:5,ach:6};
+const TIER_ORDER={common:0,rare:1,event:2,login:3,epic:4,myth:5,ach:6,trophy:7};
 let shopTierF='all',shopBodyF='all';
 const kindOf=x=>COSMAP[x.id]?'slot':EXPRMAP[x.id]?'expr':BODYMAP[x.id]?'body':'weapon';
 const priceOf=x=>x.price!=null?x.price:TIER[x.tier].price;
 function isWorn(x){const k=kindOf(x);if(x.slot==='outfit')return SAVE.wardrobe.outfits[x.cls]===x.id;if(k==='body')return(SAVE.wardrobe.eq[x.slot]||BODY_DEF[x.slot])===x.id;return k==='slot'?SAVE.wardrobe.eq[x.slot]===x.id:k==='expr'?SAVE.wardrobe.eq.expr===x.id:SAVE.wardrobe.weapons[x.cls]===x.id;}
 function shopItems(){
-  if(shopTab==='cos')return COS.filter(x=>shopTierF==='all'||x.tier===shopTierF).sort((a,b)=>TIER_ORDER[a.tier]-TIER_ORDER[b.tier]||evOrd(a)-evOrd(b)||SLOTS.findIndex(s=>s[0]===a.slot)-SLOTS.findIndex(s=>s[0]===b.slot));
+  if(shopTab==='cos')return COS.filter(x=>shopTierF==='all'||x.tier===shopTierF||(shopTierF==='ach'&&x.tier==='trophy')).sort((a,b)=>TIER_ORDER[a.tier]-TIER_ORDER[b.tier]||evOrd(a)-evOrd(b)||SLOTS.findIndex(s=>s[0]===a.slot)-SLOTS.findIndex(s=>s[0]===b.slot));
   if(shopTab==='expr')return EXPRS.filter(x=>!FREE.has(x.id));
   if(shopTab==='body'){const o=Object.keys(BODY_SLOTS);return BODY.filter(x=>!FREE.has(x.id)&&(shopBodyF==='all'||x.slot===shopBodyF)).sort((a,b)=>o.indexOf(a.slot)-o.indexOf(b.slot));}
   return WEAPS.filter(x=>x.cls===shopCls&&!FREE.has(x.id));
@@ -4180,6 +4207,7 @@ function renderShop(){
     const col=k==='slot'?TIER[x.tier].col:k==='body'?'#ffb3c6':'#9be7ff';
     const btn=own?(isWorn(x)?'<button class="btn" disabled>使用中</button>':`<button class="btn" data-act="eq" data-id="${x.id}">穿上</button>`)
       :x.tier==='ach'?`<button class="btn go-ach" data-act="goach" data-id="${x.id}">成就兌換 →</button>`
+      :x.tier==='trophy'?`<button class="btn go-ach tro" data-act="goach" data-id="${x.id}">${lockText(x)} →</button>`
       :!canBuy(x)?`<button class="btn" disabled>${lockText(x)}</button>`
       :`<button class="btn ${SAVE.coins<pr?'poor':'primary'}" data-act="buy" data-id="${x.id}"${SAVE.coins<pr?' disabled title="金幣不夠"':''}>購買 <i class="coin-ic"></i><span class="price">${pr.toLocaleString()}</span></button>`;
     return head+`<div class="shop-card${own?' owned':''}"><canvas width="220" height="220" data-id="${x.id}"></canvas>${x.cls?`<span class="excl" style="--c:${CLASSES[x.cls].color}">專屬</span>`:''}<h4>${x.name}</h4>${k==='weapon'?'':`<div class="tag" style="color:${col}">${tag}</div>`}${x.tier==='event'?`<div class="ev-when" style="--c:${EVENTS[x.event].col}">${EVENTS[x.event].name} · ${EVENTS[x.event].retired?'已結束':eventActive(x.event)?`販售到 ${EVENTS[x.event].to[0]}/${EVENTS[x.event].to[1]}`:evRange(x.event)}</div>`:''}${btn}</div>`;}).join('');
@@ -4205,6 +4233,9 @@ function goBuy(id){const x=ITEM(id);if(!x)return;SFX('click');
   const k=kindOf(x);shopTab=k==='body'?'body':k==='expr'?'expr':k==='weapon'?'weapon':'cos';shopTierF='all';shopBodyF='all';if(x.cls)shopCls=x.cls;else if(k==='weapon')shopCls=wrCls;else shopCls=wrCls;
   openShop();spotCard($('shopGrid').querySelector(`canvas[data-id="${id}"]`)?.closest('.shop-card'));}
 $('shopBtn').onclick=openShop;
+$('lvSkillsBtn').onclick=()=>{if(!G)return;$('lvSkillsBody').innerHTML=pauseTable();$('lvSkills').hidden=false;$('lvSkillsBody').scrollTop=0;};
+$('lvSkillsClose').onclick=()=>{hideTip();$('lvSkills').hidden=true;};
+$('lvSkills').addEventListener('click',e=>{if(e.target===$('lvSkills')){hideTip();$('lvSkills').hidden=true;}});
 $('shopEvPill').onclick=()=>{shopTab='cos';shopTierF='all';renderShop();const h=$('sec_e_'+(Object.keys(EVENTS).filter(k=>eventActive(k)).pop()||''))||document.querySelector('[id^="sec_e_"]');if(h)setTimeout(()=>h.scrollIntoView({block:'start',behavior:'smooth'}),60);};achInit();
 $('goalList').addEventListener('click',e=>{const b=e.target.closest('.goal-row');if(!b||b.disabled)return;const x=($('goalPanel')._g||[])[+b.dataset.gi];if(x&&x.go)goalGo(x.go);});
 $('dailyBtn').onclick=()=>{tasksIntroDone();renderDaily();showOnly('dailyScreen');$('dailyScreen').scrollTop=0;if(!SAVE.tasksHelp){SAVE.tasksHelp=1;$('dlHelp').hidden=false;}persist(false);};
@@ -4563,7 +4594,7 @@ function gameOver(){
     $('overTitle').textContent=G.cleared?'通關！冒險完成':G.quit?'冒險結束':'喵嗚……倒下了';
     $('settleBox').hidden=false;$('settleDone').hidden=true;$('settleName').value='';$('settleName').placeholder='例如：'+(runNameFor(G.cls));
     $('settleScore').innerHTML=`這局總分<b>${calcScore(G.finalSnap).toLocaleString()}</b>分`;
-    showOnly('overScreen');$('settleName').focus({preventScroll:true});$('settleName').select();
+    showOnly('overScreen');if(!TOUCH){$('settleName').focus({preventScroll:true});$('settleName').select();}
   },G.quit?0:2100);
 }
 let PTC=new Set();try{PTC=new Set(JSON.parse(localStorage.getItem('catGardenPtCol')||'[]'));}catch(_){}
