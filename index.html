@@ -1067,6 +1067,14 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .ach-gift{display:block;margin-top:3px;font:800 11.5px/1.3 var(--f-body);color:#ffb347}
 .shop-card .btn.go-ach.tro{color:#ffcf8a;border-color:rgba(255,179,71,.55);background:rgba(255,179,71,.1);white-space:normal;line-height:1.3}
 .btn.tro-need{white-space:normal;line-height:1.3;font-size:12.5px}
+.hs.hs-new{border-color:rgba(255,211,77,.85);background:color-mix(in srgb,var(--panel) 82%,#ffd34d)}
+.hs.hs-flash{animation:spotPulse 1.1s ease-in-out 2}
+.hs-tag.new{background:#ffd34d;color:#3a2a00;border-color:#ffd34d;margin:0 6px 0 0}
+.hs-pager{width:min(820px,100%);display:flex;align-items:center;justify-content:center;gap:14px;margin:4px 0 8px;font:800 14px/1 var(--f-body);color:var(--muted)}
+.hs-pager b{color:var(--ink,#f1f7e8)}
+.hs-pager .btn{padding:8px 14px;min-width:0;white-space:nowrap}
+.hs-pager .btn:disabled{opacity:.35}
+.hs-pager[hidden]{display:none}
 </style>
 
 <canvas id="game"></canvas>
@@ -1222,6 +1230,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
   <h2 class="title">冒險紀錄</h2>
   <div class="cx-tabs"><div class="seg" id="hsTabs"><button data-s="score" aria-pressed="true">最高分</button><button data-s="date" aria-pressed="false">最近</button></div><span id="hsCount"></span><details class="hs-help"><summary aria-label="分數計算">?</summary><div class="hs-help-pop"><b>每局分數這樣算</b><ul class="hs-pts"><li><span>每升 1 級</span><em>+100</em></li><li><span>每打倒 1 隻怪</span><em>+2</em></li><li><span>每打倒小隊長</span><em>+150</em></li><li><span>每打倒 BOSS</span><em>+500</em></li><li><span>每撐過 1 秒</span><em>+1</em></li></ul><b>加成</b><ul class="hs-pts"><li><span>高難度</span><em>×1.2</em></li><li><span>每多 1 周目</span><em>+20%</em></li></ul></div></details></div>
   <div class="hs-list" id="hsList"></div>
+  <div class="hs-pager" id="hsPager" hidden></div>
 </section>
 
 <section id="shopScreen" class="screen" hidden>
@@ -2113,6 +2122,8 @@ let G=null,p=null;
 const D=v=>v*p.dmgMul*(G.buff.atk>0?1.4:1)*(CUR_LV>=5?1.3:CUR_LV>=4?1.1:1)*(G.perks.x_frenzy&&G.comboT>0?1+Math.min(0.18,(G.combo||0)*0.003):1);
 
 const mouseAim={cx:0,cy:0,t:-1e9};
+// 飛撲：移動中照移動方向衝，站著不動才朝最近的怪
+function pounceDir(){if(p.moving&&(p.fx||p.fy))return Math.atan2(p.fy,p.fx);return aimDir();}
 function aimDir(){
   if(performance.now()-mouseAim.t<4000&&!joy.active){const r=cvs.getBoundingClientRect(),wx=p.x-viewW/2+(mouseAim.cx-r.left)/SCALE,wy=p.y-viewH/2+(mouseAim.cy-r.top)/SCALE;if(Math.hypot(wx-p.x,wy-p.y)>8)return Math.atan2(wy-p.y,wx-p.x);}
   {const e=nearest(p.x,p.y,700);if(e&&!e.prop)return Math.atan2(e.y-p.y,e.x-p.x);}
@@ -2143,11 +2154,11 @@ war:[
   up(dt,l,s){tick(s,dt,4-0.3*l,()=>{if(!nearest(p.x,p.y,480))return false;const a0=aimAngle(480);for(const a of(l>=5?[a0-0.45,a0,a0+0.45]:[a0]))for(let i=0;i<FISS_N[l-1];i++)strike({x:p.x+Math.cos(a)*(50+i*46),y:p.y+Math.sin(a)*(50+i*46),r:40+3*l,dmg:D(26+13*l),delay:0.05+0.075*i,kind:'rock',color:'#c98a4b',knock:70});});}},
  {id:'w_pounce',name:'貓咪飛撲',ic:'撲',aim:true,desc:l=>`朝前方飛撲 ${150+15*l} 距離，沿路造成 ${30+14*l} 傷害，飛撲時無敵`,
   up(dt,l,s){
-    if(s.pend>0){s.pend-=dt;if(s.pend<=0){s.a=aimDir();s.go=0.22;p.face=Math.cos(s.a)>=0?1:-1;G.fx.push({type:'ring',x:p.x,y:p.y,r:40,life:.25,max:.25,color:'#ffd34d'});}return;}
+    if(s.pend>0){s.pend-=dt;if(s.pend<=0){s.a=pounceDir();s.go=0.22;p.face=Math.cos(s.a)>=0?1:-1;G.fx.push({type:'ring',x:p.x,y:p.y,r:40,life:.25,max:.25,color:'#ffd34d'});}return;}
     if(s.go>0){s.go-=dt;const v=(150+15*l)/0.22;p.x=clamp(p.x+Math.cos(s.a)*v*dt,p.r,WORLD-p.r);p.y=clamp(p.y+Math.sin(s.a)*v*dt,p.r,WORLD-p.r);p.inv=Math.max(p.inv,0.08);
       hitCircle(p.x,p.y,36,D(30+14*l),'wp',0.3,{knock:160});if(Math.random()<0.7)particles(p.x,p.y+12,'#e7b46f',1,60);
       if(s.go<=0&&l>=5){nova(p.x,p.y,120,D(20+8*l),{knock:220,color:'#ff8a3d'});G.shake=Math.max(G.shake,6);if(!s.again){s.again=true;s.pend=0.15;}}return;}
-    tick(s,dt,3.4-0.2*l,()=>{if(!nearest(p.x,p.y,420))return false;s.a=aimDir();s.go=0.22;s.again=false;p.face=Math.cos(s.a)>=0?1:-1;G.fx.push({type:'ring',x:p.x,y:p.y,r:40,life:.25,max:.25,color:'#ffd34d'});});},
+    tick(s,dt,3.4-0.2*l,()=>{if(!nearest(p.x,p.y,420))return false;s.a=pounceDir();s.go=0.22;s.again=false;p.face=Math.cos(s.a)>=0?1:-1;G.fx.push({type:'ring',x:p.x,y:p.y,r:40,life:.25,max:.25,color:'#ffd34d'});});},
   draw(c,s){if(!(s.go>0))return;c.save();c.lineCap='round';c.globalAlpha=0.4;c.strokeStyle='#ffd34d';c.lineWidth=14;c.beginPath();c.moveTo(p.x-Math.cos(s.a)*70,p.y-Math.sin(s.a)*70);c.lineTo(p.x,p.y);c.stroke();c.restore();}},
  {id:'w_hammer',name:'天降罐頭錘',ic:'罐',desc:l=>`${1+(l>=3)+(l>=5)} 把戰錘從天而降，範圍 ${70+8*l} 造成 ${40+18*l} 傷害`,
   up(dt,l,s){tick(s,dt,3.8-0.25*l,()=>{const n=1+(l>=3)+(l>=5);let ok=false;for(let i=0;i<n;i++){const e=randomInView();if(!e)break;ok=true;{const x=e.x,y=e.y,dd=D(40+18*l);strike({x,y,r:70+8*l,dmg:dd,delay:0.65,kind:'hammer',color:'#ffd166',knock:170,after:l>=5?()=>{for(let k=0;k<6;k++)shoot({x,y,a:k*TAU/6+rand(-.2,.2),spd:330,r:8,dmg:dd*0.35,pierce:3,life:0.6,kind:'can',lv:5});}:null});}}return ok;});}}
@@ -2500,6 +2511,8 @@ function drawTrap(c,t,ms){
 
 /* ---------- Lake Goddess: one wish after every 5th boss ---------- */
 let goddess=null;
+// 女神只送一般商店造型；簽到、節日、成就兌換、成就獎勵、神話都是各自管道限定
+const GD_TIERS=['common','rare','epic'];
 function openGoddess(){
   SAVE.stats.goddess++;G.goddessN=(G.goddessN||0)+1;G.modal=true;goddess={t0:performance.now()/1000,confirm:false};
   $('gdLine').textContent='撲通——你掉進了閃閃發光的湖裡。一位溫柔的女神從水面升起：「勇敢的小貓，你一路打到了 Lv '+p.level+'。我可以實現你一個願望。」';
@@ -2507,7 +2520,7 @@ function openGoddess(){
   showOnly('goddessScreen');$('goddessScreen').scrollTop=0;setTimeout(()=>{const b=$('gdOpts').querySelector('button');b&&b.focus({preventScroll:true});},30);
 }
 function renderGoddessOpts(){
-  const left=COS.filter(x=>x.tier!=='myth'&&x.tier!=='ach'&&x.tier!=='event'&&x.tier!=='login'&&!owns(x.id)).length;
+  const left=COS.filter(x=>GD_TIERS.includes(x.tier)&&!owns(x.id)).length;
   $('gdOpts').innerHTML=[
     `<button class="opt" data-w="1"><b>1</b>請送我一件喜歡的裝飾，我要繼續冒險！${left?'':'（衣櫃已集滿，改送 300 金幣）'}</button>`,
     `<button class="opt" data-w="2"><b>2</b>請送我 300 金幣，我要繼續冒險！</button>`,
@@ -2519,7 +2532,7 @@ function goddessWish(w){
   if(!goddess)return;
   if(w===1||w===2||w===3)G.blessCount=0;
   if(w===1){
-    const left=COS.filter(x=>x.tier!=='myth'&&x.tier!=='ach'&&x.tier!=='event'&&x.tier!=='login'&&!owns(x.id));
+    const left=COS.filter(x=>GD_TIERS.includes(x.tier)&&!owns(x.id));
     if(!left.length){SAVE.coins+=300;finishGoddess('女神送你 300 金幣','願望實現');return;}
     $('gdLine').textContent='女神微笑著攤開手心，水面浮出幾件閃亮的寶物：「挑一件你最喜歡的吧。」';
     $('gdOpts').hidden=true;const g=$('gdPick');g.hidden=false;
@@ -2802,6 +2815,7 @@ let CUR_LV=0;
 /* ---------- game setup ---------- */
 function xpNeed(l){return Math.floor(6+l*3.2+l*l*0.16);}
 function newGame(cls,snap,opts={}){
+  for(const e of ESPR.live){if(e._spr&&ESPR.pool.length<120)ESPR.pool.push(e._spr);e._spr=null;}ESPR.live.clear();
   G={cls,t:0,kills:0,bossKills:0,capKills:0,bonusDmg:0,shake:0,spawnT:0,boss:null,pendingLv:0,bossQueue:[],chestQueue:[],choosing:false,modal:false,paused:false,over:false,lastLocal:0,
      achRun:snap&&Array.isArray(snap.achRun)?snap.achRun.filter(x=>typeof x==='string').slice(0,400):[],hard:!!(snap?snap.hard:opts.hard),loop:snap?clamp(snap.loop|0,0,99):0,goddessPending:!!(snap&&snap.goddessPending),clearPending:!!(snap&&snap.clearPending),blessUntil:snap?snap.blessUntil|0:0,blessUsed:!!(snap&&snap.blessUsed),blessCount:snap?(snap.blessCount!=null?snap.blessCount|0:(snap.blessUsed?1:0)):0,smallBless:!!(snap&&snap.smallBless),revUsed:snap?snap.revUsed|0:0,
      buff:{atk:0,spd:0,falcon:0},rage:0,anger:0,ults:{},flashT:0,flashCol:'#fff',
@@ -2928,7 +2942,7 @@ function spawnBoss(){
 }
 
 /* ---------- helpers ---------- */
-function nearest(x,y,maxD,ex){let b=null,bd=maxD*maxD,bp=null,bpd=bd;for(const e of G.enemies){if(e.dead||(ex&&ex.has(e)))continue;const dx=e.x-x,dy=e.y-y,d=dx*dx+dy*dy;if(e.prop){if(d<bpd){bpd=d;bp=e;}}else if(d<bd){bd=d;b=e;}}return b||bp;}
+function nearest(x,y,maxD,ex){let b=null,bd=maxD*maxD,bp=null,bpd=bd;for(const e of G.enemies){if(e.dead||(ex&&ex.has(e)))continue;const dx=e.x-x,dy=e.y-y,d=dx*dx+dy*dy;if(e.prop){if(d<bpd){bpd=d;bp=e;}}else if(d<bd){bd=d;b=e;}}if(bp&&bpd<bd&&bpd<130*130)return bp;return b||bp;}
 /* ---------- gardener pots: friendly potted cat-grass (terracotta pot, blue ring, smiling face, never walks) ---------- */
 let potId=0;
 const potCdMul=()=>1.15-0.35*Math.min(1,((p&&p.level)||1)/40);
@@ -3567,8 +3581,10 @@ function drawEnemy(c,e){
   if(e.captain){c.fillStyle='rgba(255,80,80,.18)';c.beginPath();c.arc(0,0,e.r+8+Math.sin(e.anim*6)*2,0,TAU);c.fill();}
   const s=e.r/14;c.scale(s*e.face,s);c.translate(0,-Math.abs(Math.sin(t*7+e.id))*2);
   // dark silhouette slightly larger than the sprite = outline that separates it from the grass
-  c.save();c.scale(1.22,1.2);c.fillStyle=c.strokeStyle=e.type==='ghost'?'rgba(150,120,220,.55)':e.captain?'#6e0c1c':(guideRage||G&&G.rage>0)?'#c0182a':e.elite?'#e0a800':'#16210f';drawEnemyShape(silhouette(c),e,t);c.restore();
-  drawEnemyShape(c,e,t);
+  const olc=e.type==='ghost'?'rgba(150,120,220,.55)':e.captain?'#6e0c1c':(guideRage||G&&G.rage>0)?'#c0182a':e.elite?'#e0a800':'#16210f';
+  if(c===ctx&&G&&!e.boss&&!ESPR.off)enemySprite(c,e,t,s,olc);
+  else{c.save();c.scale(1.22,1.2);c.fillStyle=c.strokeStyle=olc;drawEnemyShape(silhouette(c),e,t);c.restore();
+  drawEnemyShape(c,e,t);}
   c.restore();
   if(e.flash>0){c.save();c.globalAlpha=0.55;c.fillStyle='#fff';c.beginPath();c.arc(e.x,e.y,e.r,0,TAU);c.fill();c.restore();}
   if(e.slowT>0&&e.slowAmt>=0.3){c.save();c.globalAlpha=0.3;c.fillStyle='#9be7ff';c.beginPath();c.arc(e.x,e.y,e.r,0,TAU);c.fill();c.restore();}
@@ -3581,9 +3597,24 @@ function drawEnemy(c,e){
   if(e.elite&&!e.captain){c.fillStyle='#ffd34d';c.beginPath();const cy=e.y-e.r-12;c.moveTo(e.x-6,cy+4);c.lineTo(e.x-6,cy-2);c.lineTo(e.x-3,cy+1);c.lineTo(e.x,cy-4);c.lineTo(e.x+3,cy+1);c.lineTo(e.x+6,cy-2);c.lineTo(e.x+6,cy+4);c.closePath();c.fill();}
   if(e.hp<e.maxHp&&(e.type==='mush'||e.type==='cactus'||e.elite)){c.fillStyle='rgba(0,0,0,.4)';c.fillRect(e.x-12,e.y-e.r-8,24,3);c.fillStyle='#ff6670';c.fillRect(e.x-12,e.y-e.r-8,24*Math.max(0,e.hp/e.maxHp),3);}
 }
+// ---- enemy sprite cache (performance: ~4x fewer canvas calls with 200 mobs on screen) ----
+const ESPR={B:34,pool:[],live:new Set(),frame:0,every:3};
+function enemySprite(c,e,t,s,olc){
+  const R=Math.min(3,Math.max(1,Math.ceil(s*SCALE*DPR*2)/2)),B=ESPR.B,px=Math.ceil(B*2*R),key=R+'|'+olc+'|'+e.type;
+  let cv=e._spr;
+  if(!cv){cv=ESPR.pool.pop()||document.createElement('canvas');e._spr=cv;e._sprK='';ESPR.live.add(e);}
+  e._sprSeen=ESPR.frame;
+  if(e._sprK!==key||(ESPR.frame+e.id)%ESPR.every===0){
+    if(cv.width!==px){cv.width=cv.height=px;}
+    const x=cv.getContext('2d',{willReadFrequently:true});x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,px,px);x.setTransform(R,0,0,R,B*R,B*R);x.globalAlpha=1;
+    x.save();x.scale(1.22,1.2);x.fillStyle=x.strokeStyle=olc;drawEnemyShape(silhouette(x),e,t);x.restore();
+    drawEnemyShape(x,e,t);e._sprK=key;}
+  c.drawImage(cv,-B,-B,B*2,B*2);
+}
+function enemySpriteGC(){ESPR.frame++;if(ESPR.frame%30)return;for(const e of ESPR.live)if(e.dead||ESPR.frame-e._sprSeen>45){if(ESPR.pool.length<120)ESPR.pool.push(e._spr);e._spr=null;ESPR.live.delete(e);}}
 // a view of the context that ignores color changes, so a sprite drawn through it comes out as one flat silhouette
 const silCache=new WeakMap();
-function silhouette(c){let s=silCache.get(c);if(!s){s=new Proxy(c,{get(t,k){const v=t[k];return typeof v==='function'?v.bind(t):v;},set(t,k,v){if(k!=='fillStyle'&&k!=='strokeStyle')t[k]=v;return true;}});silCache.set(c,s);}return s;}
+function silhouette(c){let s=silCache.get(c);if(!s){const B={};s=new Proxy(c,{get(t,k){const v=t[k];return typeof v==='function'?(B[k]||(B[k]=v.bind(t))):v;},set(t,k,v){if(k!=='fillStyle'&&k!=='strokeStyle')t[k]=v;return true;}});silCache.set(c,s);}return s;}
 function drawEnemyShape(c,e,t){
   switch(e.type){
     case 'grass':c.fillStyle='#4aa83c';for(let i=-2;i<=2;i++){c.beginPath();c.moveTo(i*4-3,6);c.quadraticCurveTo(i*5+Math.sin(t*6+i)*2,-6,i*6+Math.sin(t*5+i)*3,-19+Math.abs(i)*3);c.lineTo(i*4+3,6);c.fill();}
@@ -3830,16 +3861,19 @@ function render(){
   for(const f of G.fx)if(f.type==='rootnet'&&inV(f.x,f.y,f.R+20))drawRootNet(c,f);
   if(G.pots)for(const q of G.pots)if(inV(q.x,q.y,q.kind==='giant'?120:90))drawPot(c,q,ms);
   for(const m of G.mines){c.save();c.translate(m.x,m.y);c.fillStyle='rgba(92,200,255,.16)';c.strokeStyle='rgba(92,200,255,.95)';c.lineWidth=2.5;c.beginPath();c.arc(0,0,17+Math.sin(ms*5)*1,0,TAU);c.fill();c.stroke();ell(c,0,2,12,5,'rgba(0,0,0,.2)');c.strokeStyle=m.arm>0?'#999':'#cfc6ae';c.lineWidth=2.5;c.beginPath();c.arc(0,0,10,Math.PI*1.1,Math.PI*1.9);c.stroke();c.beginPath();c.arc(0,0,10,Math.PI*0.1,Math.PI*0.9);c.stroke();c.fillStyle='#8a7a5a';c.fillRect(-3,-3,6,6);c.restore();}
-  for(const g of G.gems){if(!inV(g.x,g.y))continue;if(g.chest){drawChest(c,g.x,g.y,g.chest,ms,false);continue;}if(g.item){drawLoot(c,g,ms);continue;}if(g.fish){c.save();c.translate(g.x,g.y+Math.sin(ms*4)*2);ell(c,0,0,9,5,'#ff9f6b');c.fillStyle='#ff9f6b';c.beginPath();c.moveTo(-7,0);c.lineTo(-13,-5);c.lineTo(-13,5);c.fill();ell(c,4,-1,1.3,1.3,'#1d2420');c.restore();continue;}
+  for(const g of G.gems){if(!inV(g.x,g.y))continue;if(g.chest){drawChest(c,g.x,g.y,g.chest,ms,false);continue;}if(g.item){drawLoot(c,g,ms);continue;}if(g.fish){c.save();c.translate(g.x,g.y+Math.sin(ms*4)*2);const pu=0.5+0.5*Math.sin(ms*5+g.x);c.globalAlpha=0.25+0.22*pu;ell(c,-1.5,0,18+pu*3,12.5+pu*2,'#fff2a8');c.globalAlpha=1;c.scale(1.25,1.25);
+    const fp=()=>{c.beginPath();c.ellipse(0,0,9,5,0,0,TAU);c.moveTo(-6,0);c.lineTo(-13,-5.5);c.lineTo(-13,5.5);c.closePath();};c.lineJoin='round';fp();c.strokeStyle='#ffffff';c.lineWidth=4.6;c.stroke();fp();c.strokeStyle='#4a1e08';c.lineWidth=2.2;c.stroke();fp();c.fillStyle='#ff9f6b';c.fill();
+    ell(c,1,-1.6,5,1.6,'#ffc59e');ell(c,4,-1,1.4,1.4,'#1d2420');c.restore();continue;}
     const big=g.v>=5,r=big?7.5:g.v>=2?6:5;drawCrystalFast(c,g.x,g.y,r,big?2:g.v>=2?1:0,ms+g.x*0.01);}
   for(const s of G.strikes){const k2=1-s.delay/Math.max(0.01,s.max);c.save();c.strokeStyle=s.color;c.globalAlpha=0.7;c.lineWidth=2;c.setLineDash([8,6]);c.beginPath();c.arc(s.x,s.y,s.r,0,TAU);c.stroke();c.setLineDash([]);c.globalAlpha=0.18;c.fillStyle=s.color;c.beginPath();c.arc(s.x,s.y,s.r*k2,0,TAU);c.fill();
     if(s.kind==='meteor'||s.kind==='hammer'){c.globalAlpha=1;const h=(1-k2)*320;c.translate(s.x+h*0.4,s.y-h);if(s.kind==='meteor'){ell(c,0,0,16,16,'#ff5a3c');ell(c,0,0,9,9,'#ffd34d');}else{c.rotate(0.6);c.fillStyle='#8a5a34';c.fillRect(-3,-4,6,34);c.fillStyle='#c0c8d2';c.fillRect(-16,-18,32,18);c.fillStyle='#ffd166';c.fillRect(-16,-11,32,4);}}
     c.restore();}
+  enemySpriteGC();
   const list=G.enemies.filter(e=>inV(e.x,e.y,e.r+40)).sort((a,b)=>a.y-b.y);
   let drewP=false;
   for(const e of list){if(!drewP&&e.y>p.y){drawPlayer(c,ms);drewP=true;}drawEnemy(c,e);}
   if(!drewP)drawPlayer(c,ms);
-  if(Object.keys(G.skills).some(id=>SKMAP[id].aim)){const a=aimDir(),R=42*p.size;c.save();c.translate(p.x+Math.cos(a)*R,p.y+Math.sin(a)*R);c.rotate(a);c.globalAlpha=0.75;c.fillStyle=CLASSES[G.cls].color;c.strokeStyle='#14241b';c.lineWidth=2;c.beginPath();c.moveTo(9,0);c.lineTo(-5,-8);c.lineTo(-1,0);c.lineTo(-5,8);c.closePath();c.stroke();c.fill();c.restore();}
+  if(Object.keys(G.skills).some(id=>SKMAP[id].aim)){const a=G.skills.w_pounce?pounceDir():aimDir(),R=42*p.size;c.save();c.translate(p.x+Math.cos(a)*R,p.y+Math.sin(a)*R);c.rotate(a);c.globalAlpha=0.75;c.fillStyle=CLASSES[G.cls].color;c.strokeStyle='#14241b';c.lineWidth=2;c.beginPath();c.moveTo(9,0);c.lineTo(-5,-8);c.lineTo(-1,0);c.lineTo(-5,8);c.closePath();c.stroke();c.fill();c.restore();}
   for(const id in G.skills){const s=SKMAP[id];if(s.draw&&id!=='w_aura'){c.save();if(G.skills[id]>=5&&GLOW()){c.shadowColor=CLASSES[G.cls].color;c.shadowBlur=14;}s.draw(c,G.st[id]);c.restore();}}
   if(G.perks.x_bird)PERKMAP.x_bird.draw(c,G.st.x_bird);
   if(G.perks.x_twin)PERKMAP.x_twin.draw(c,G.st.x_twin);
@@ -4645,20 +4679,22 @@ function saveRecord(r){
   SAVE.history.unshift(r);SAVE.history=SAVE.history.slice(0,100);SAVE.lastName=isAutoName(r.name)?'':r.name;persist();
   const rank=SAVE.history.slice().sort((a,b)=>b.score-a.score).findIndex(x=>x.id===r.id)+1;return rank;
 }
-$('settleSave').onclick=()=>{if(!G||!G.finalSnap||G.settled)return;const r=makeRecord(G.finalSnap,$('settleName').value.trim()||runNameFor(G.cls),G.quit?'quit':'death');const rank=saveRecord(r);G.settled=true;
+$('settleSave').onclick=()=>{if(!G||!G.finalSnap||G.settled)return;const r=makeRecord(G.finalSnap,$('settleName').value.trim()||runNameFor(G.cls),G.quit?'quit':'death');const rank=saveRecord(r);G.settled=true;G.savedRecId=r.id;
   $('settleBox').hidden=true;$('settleDone').hidden=false;$('settleDoneText').textContent=`「${r.name}」已存進紀錄：${r.score.toLocaleString()} 分，排第 ${rank} 名（共 ${SAVE.history.length} 筆）`;};
-$('settleView').onclick=()=>openHistory('score');
-let hsSort='score',hsArmed=null;
+$('settleView').onclick=()=>openHistory('score',G&&G.savedRecId);
+let hsSort='score',hsArmed=null,hsHi=null,hsPage=0;const HS_PER=10;
 const esc=t=>String(t).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 function renderHistory(){
   $('hsTabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===hsSort));
   const byScore=SAVE.history.slice().sort((a,b)=>b.score-a.score),rankOf=new Map(byScore.map((r,i)=>[r.id,i+1]));
   const list=hsSort==='score'?byScore:SAVE.history.slice().sort((a,b)=>b.date-a.date);
   $('hsCount').textContent=SAVE.history.length?`共 ${SAVE.history.length} 筆`:'';
+  const pages=Math.max(1,Math.ceil(list.length/HS_PER));if(hsHi){const i=list.findIndex(r=>r.id===hsHi);if(i>=0&&hsPage<0)hsPage=Math.floor(i/HS_PER);}hsPage=Math.min(pages-1,Math.max(0,hsPage));
+  $('hsPager').hidden=pages<=1;$('hsPager').innerHTML=pages<=1?'':`<button class="btn" data-pg="${hsPage-1}"${hsPage?'':' disabled'}>‹ 上一頁</button><span>第 <b>${hsPage+1}</b> / ${pages} 頁</span><button class="btn" data-pg="${hsPage+1}"${hsPage<pages-1?'':' disabled'}>下一頁 ›</button>`;
   if(!list.length){$('hsList').innerHTML='<div class="hs-empty">還沒有紀錄。<br>角色倒下、主動結束一局，或開新遊戲覆蓋存檔時，都可以把成績存進來。</div>';return;}
-  $('hsList').innerHTML=list.map(r=>{const rk=rankOf.get(r.id),d=new Date(r.date);const ds=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    return `<div class="hs${rk<=3?' top'+rk:''}"><span class="hs-rank">${rk}</span><div class="hs-pic"><canvas width="144" height="144" data-id="${r.id}"></canvas></div>
-      <div><div class="hs-name">${esc(r.name)}${r.wk?`<span class="hs-tag wk">每週挑戰・${WKMAP[r.wk].n}</span>`:''}${r.hard?'<span class="hs-tag hard">高難度</span>':''}${r.loop?`<span class="hs-tag loop">${r.loop+1} 周目</span>`:''}</div>
+  $('hsList').innerHTML=list.slice(hsPage*HS_PER,hsPage*HS_PER+HS_PER).map(r=>{const rk=rankOf.get(r.id),d=new Date(r.date);const ds=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<div class="hs${rk<=3?' top'+rk:''}${hsHi===r.id?' hs-new':''}" data-rid="${r.id}"><span class="hs-rank">${rk}</span><div class="hs-pic"><canvas width="144" height="144" data-id="${r.id}"></canvas></div>
+      <div><div class="hs-name">${hsHi===r.id?'<span class="hs-tag new">剛剛存的</span>':''}${esc(r.name)}${r.wk?`<span class="hs-tag wk">每週挑戰・${WKMAP[r.wk].n}</span>`:''}${r.hard?'<span class="hs-tag hard">高難度</span>':''}${r.loop?`<span class="hs-tag loop">${r.loop+1} 周目</span>`:''}</div>
       <div class="hs-meta">${CLASSES[r.cls].name} · <b>Lv ${r.level}</b> · 存活 <b>${fmt(r.t)}</b> · 擊殺 <b>${r.kills.toLocaleString()}</b> · 小隊長 <b>${r.capKills}</b> · BOSS <b>${r.bossKills}</b><br>${ds}${REASON[r.reason]?' · '+REASON[r.reason]:''}</div></div>
       <div class="hs-side"><div class="hs-score">${r.score.toLocaleString()}<small>分</small></div><button class="hs-share" data-share="${r.id}">分享</button><button class="hs-del${hsArmed===r.id?' armed':''}" data-del="${r.id}">${hsArmed===r.id?'確定刪除？':'刪除'}</button></div></div>`;}).join('');
   $('hsList').querySelectorAll('canvas').forEach(cv=>{const r=SAVE.history.find(x=>x.id===cv.dataset.id);const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,144,144);drawCatFit(c,72,92,r.cls,1,1.3,false,2.6,false,{...r.eq,weapon:r.weapon});});
@@ -4766,10 +4802,12 @@ async function saveShare(){
   }catch(_){hint.textContent='這裡不能直接存，請長按圖片儲存';}
   btn.disabled=false;
 }
-function openHistory(sort){if(sort)hsSort=sort;hsArmed=null;renderHistory();showOnly('historyScreen');$('historyScreen').scrollTop=0;}
+function openHistory(sort,hi){if(sort)hsSort=sort;hsArmed=null;hsHi=hi||null;hsPage=hsHi?-1:0;renderHistory();showOnly('historyScreen');$('historyScreen').scrollTop=0;if(hsHi)hsScrollHi();}
+function hsScrollHi(){requestAnimationFrame(()=>{const row=$('hsList').querySelector('.hs-new');if(!row)return;row.scrollIntoView({block:'center'});row.classList.remove('hs-flash');void row.offsetWidth;row.classList.add('hs-flash');});}
 $('historyBtn').onclick=()=>openHistory();
 $('shareSave').onclick=saveShare;$('shareTitle').onchange=e=>{shareTitle=e.target.value||null;try{shareTitle?localStorage.setItem('catGardenShareTitle',shareTitle):localStorage.removeItem('catGardenShareTitle');}catch(_){}renderShareImg();};$('shareClose').onclick=closeShare;$('shareModal').addEventListener('click',e=>{if(e.target.id==='shareModal')closeShare();});
-$('hsTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hsSort=b.dataset.s;hsArmed=null;renderHistory();});
+$('hsTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hsSort=b.dataset.s;hsArmed=null;hsPage=hsHi?-1:0;renderHistory();if(hsHi)hsScrollHi();else $('historyScreen').scrollTop=0;});
+$('hsPager').addEventListener('click',e=>{const b=e.target.closest('[data-pg]');if(!b||b.disabled)return;hsPage=+b.dataset.pg;hsArmed=null;renderHistory();$('historyScreen').scrollTop=0;});
 $('hsList').addEventListener('click',e=>{const sh=e.target.closest('[data-share]');if(sh){openShare(sh.dataset.share);return;}const b=e.target.closest('[data-del]');if(!b)return;const id=b.dataset.del;
   if(hsArmed!==id){hsArmed=id;renderHistory();return;}SAVE.history=SAVE.history.filter(r=>r.id!==id);SAVE.stats.delRec=(SAVE.stats.delRec||0)+1;hsArmed=null;persist();renderHistory();achCheck();});
 $('retryBtn').onclick=()=>{weeklyArm=!!(G.weekly&&G.weekly.wk===weekKey());newGame(G.cls);};
@@ -4850,6 +4888,6 @@ renderHome();
 (function autoCheckin(n=0){if(!Store.loaded&&n<60){setTimeout(()=>autoCheckin(n+1),250);return;}setTimeout(()=>{if(!G&&!$('startScreen').hidden&&!ciState().claimed&&!ciState().bad&&!ciState().full)openCheckin();},300);})();
 initCloud().finally(()=>{Store.loaded=true;renderSaveNote();if(!$('checkinScreen').hidden)renderCheckin();});
 requestAnimationFrame(frame);
-window.__cat={makeEnemy:(...a)=>makeEnemy(...a),drawCat:(...a)=>drawCat(...a),drawPot:(...a)=>drawPot(...a),drawCatFit:(...a)=>drawCatFit(...a),get AU(){return AU},SFX,ciState,openCheckin,claimCheckin,setEvent:k=>{FORCE_EVENT=k;},setDay:d=>{DBG_DAY=d;renderHome();},claimGift,killEnemy:e=>killEnemy(e),get p(){return p},hurtPlayer:d=>hurtPlayer(d),choose:i=>choose(i),get choices(){return curChoices},ultToast:(n,i)=>ultToast(n,i),drawGuide,guideGo,get guideIdx(){return guideIdx},openGoddess,openClear,setPause:v=>setPause(v),get G(){return G},get SAVE(){return SAVE},get talk(){return talk},openTalk,newGame,choose,openChest,step:(n=1)=>{for(let i=0;i<n;i++)if(G&&!G.paused&&!G.choosing&&!G.modal&&!G.over)update(1/60);render();renderPreviews(performance.now()/1000);}};
+window.__cat={ESPR,drawEnemyShape:(...a)=>drawEnemyShape(...a),makeEnemy:(...a)=>makeEnemy(...a),drawCat:(...a)=>drawCat(...a),drawPot:(...a)=>drawPot(...a),drawCatFit:(...a)=>drawCatFit(...a),get AU(){return AU},SFX,ciState,openCheckin,claimCheckin,setEvent:k=>{FORCE_EVENT=k;},setDay:d=>{DBG_DAY=d;renderHome();},claimGift,killEnemy:e=>killEnemy(e),get p(){return p},hurtPlayer:d=>hurtPlayer(d),choose:i=>choose(i),get choices(){return curChoices},ultToast:(n,i)=>ultToast(n,i),drawGuide,guideGo,get guideIdx(){return guideIdx},openGoddess,openClear,setPause:v=>setPause(v),get G(){return G},get SAVE(){return SAVE},get talk(){return talk},openTalk,newGame,choose,openChest,step:(n=1)=>{for(let i=0;i<n;i++)if(G&&!G.paused&&!G.choosing&&!G.modal&&!G.over)update(1/60);render();renderPreviews(performance.now()/1000);}};
 })();
 </script>
