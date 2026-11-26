@@ -666,7 +666,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .shop-card .btn.poor .price{color:#ff6670}
 
 .crown-ic{width:20px;height:15px;vertical-align:-2px;margin-right:6px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
-.event-pill{border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);color:#fff;border-radius:999px;padding:8px 16px;font:800 14px/1.2 var(--f-body);animation:blink 1.8s infinite}
+.event-pill{border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 18%,transparent);color:#fff;border-radius:999px;padding:8px 16px;font:800 14px/1.2 var(--f-body);animation:blink 3.6s ease-in-out infinite}
 .ci-btn{position:relative}
 .ci-dot{position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#ff4d5a;box-shadow:0 0 0 2px #14241b}
 .ci-top{display:flex;gap:14px;align-items:center;width:min(760px,100%);box-sizing:border-box;background:var(--panel);border:1px solid rgba(127,219,255,.45);border-radius:16px;padding:10px 16px}
@@ -1045,7 +1045,7 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 #rdPanel.wk-mode .rd-go{background:#9b6ce8;border-color:#9b6ce8;color:#fff}
 #cfWk{margin:0 auto 10px}
 @media (orientation:landscape) and (max-height:500px){.wk-notice{padding:6px 10px;gap:2px}.wn-rule b{font-size:14px;display:inline;margin-right:6px}.wn-foot{display:none}}
-#readyScreen .rd-role{font-size:15px;line-height:1.3}#readyScreen .rd-stats .st{height:30px;padding:0 12px}#readyScreen .rd-stats i{font-size:13px}#readyScreen .rd-stats b{font-size:16px}#readyScreen .rd-desc{font-size:15px;line-height:1.6}#readyScreen #rdBack{font-size:15px}
+#readyScreen .rd-role{font-size:15px;line-height:1.3}#readyScreen .rd-stats .st{height:30px;padding:0 12px}#readyScreen .rd-stats i{font-size:13px}#readyScreen .rd-stats b{font-size:16px}#readyScreen .rd-desc{font-size:15px;line-height:1.6}#readyScreen #rdBack{font-size:15px}#confirmScreen #cfNo{font-size:15px}
 @media (orientation:landscape) and (max-height:500px){#readyScreen .rd-role{font-size:13.5px}#readyScreen .rd-desc{font-size:13.5px;line-height:1.5}#readyScreen .rd-stats .st{height:26px}#readyScreen .rd-stats b{font-size:14.5px}}
 .shop-ev{display:block;margin:-4px auto 2px;cursor:pointer}
 .shop-ev[hidden]{display:none}
@@ -1083,7 +1083,6 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .set-lb{font:800 15px/1 var(--f-body);color:#f1f7e8}
 .set-row input[type=range]{width:100%;accent-color:#ffd34d;height:28px;margin:0}
 .set-v{font:800 14px/1 var(--f-body);color:var(--sun);text-align:right;font-variant-numeric:tabular-nums}
-.set-note{margin:0;font:600 12.5px/1.5 var(--f-body);color:var(--muted);text-align:center}
 @media (orientation:landscape) and (max-height:500px){#bossBar{width:min(340px,56%)}#bossName{font-size:12px;letter-spacing:.04em;line-height:1.2}.bbar{height:8px;border-radius:4px;margin-top:2px}}
 .gard-box{align-items:center;text-align:center;border-color:rgba(123,224,143,.7)}
 .gard-burst{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(123,224,143,.35),rgba(123,224,143,0) 70%);display:grid;place-items:center}
@@ -1096,6 +1095,19 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 .cat.hl-new{animation:spotPulse 1.1s ease-in-out 2}
 @media (orientation:landscape) and (max-height:500px){.gard-burst,.gard-burst canvas{width:96px;height:96px}.gard-txt{font-size:12.5px;line-height:1.45}.gard-box{gap:6px}}
 @media (orientation:landscape) and (max-height:500px){h2.title{font-size:26px}}
+@media (orientation:landscape) and (max-height:500px){
+  #shopScreen{gap:8px}
+  #shopScreen .screen-top{margin-bottom:2px}
+  #shopScreen .shop-ev{align-self:flex-end;margin:-37px 0 4px;box-sizing:border-box;display:block;padding:6px 14px;font-size:12.5px;line-height:1.25;white-space:nowrap;position:relative;z-index:6;max-width:calc(50% - 46px)}
+  #shopScreen .shop-ev[hidden]{display:none}
+  #shopScreen .shop-tabs{padding:3px}
+  #shopScreen .shop-tabs button{padding-top:6px;padding-bottom:6px}
+}
+.cats-head{scroll-margin-top:12px}
+.cats-head.hl-go span{animation:headPop .55s ease-in-out .35s 2}
+@keyframes headPop{50%{transform:scale(1.12);color:#fff2b0;text-shadow:0 0 14px rgba(255,211,77,.8)}}
+.ult-c .cb[data-tip]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ult-c .cb[data-tip]:active{transform:scale(.94)}
 </style>
 
 <canvas id="game"></canvas>
@@ -1129,7 +1141,6 @@ h2.title{margin:0;font:900 clamp(26px,6vw,40px)/1.2 var(--f-body);color:var(--su
 <div class="dl-help" id="setSheet" hidden><div class="dl-help-box set-box" role="dialog" aria-label="設定"><h3>設定</h3>
   <div class="set-row"><span class="set-ic" data-ic="music"></span><span class="set-lb">音樂</span><input type="range" id="volMusic" min="0" max="100" step="5" aria-label="音樂音量"><span class="set-v" id="volMusicV"></span></div>
   <div class="set-row"><span class="set-ic" data-ic="sfx"></span><span class="set-lb">音效</span><input type="range" id="volSfx" min="0" max="100" step="5" aria-label="音效音量"><span class="set-v" id="volSfxV"></span></div>
-  <p class="set-note">拉到 0 就是靜音；右上角的喇叭、音符按鈕也可以一鍵開關。</p>
   <button class="btn primary" id="setOk">完成</button></div></div>
 <div class="lv-sk" id="lvSkills" hidden><div class="lv-sk-box" role="dialog" aria-label="目前技能"><div id="lvSkillsBody" class="pt-wrap"></div><button class="btn primary" id="lvSkillsClose">回去選技能</button></div></div>
 <div id="shareModal" hidden><div class="sh-box" role="dialog" aria-label="分享紀錄"><label class="sh-title">稱號<select id="shareTitle"></select></label><img id="shareImg" alt="這局的紀錄圖"><p class="sh-hint" id="shareHint"></p><div class="row sh-btns"><button class="btn primary" id="shareSave">存圖</button><button class="btn" id="shareClose">關閉</button></div></div></div>
@@ -4064,7 +4075,7 @@ let tipEl=null,tipFor=null;
 function hideTip(){if(tipEl)tipEl.hidden=true;tipFor=null;}
 function showTip(el){
   if(tipFor===el){hideTip();return;}
-  const h=tipHTML(el.dataset.tip,+el.dataset.lv||0);if(!h)return;
+  const h=tipHTML(el.dataset.tip,+el.dataset.lv||0,el.dataset.cx==='1');if(!h)return;
   if(!tipEl){tipEl=document.createElement('div');tipEl.id='tip';document.body.appendChild(tipEl);}
   tipEl.innerHTML=h;tipEl.hidden=false;tipFor=el;
   const r=el.getBoundingClientRect(),w=tipEl.offsetWidth,hh=tipEl.offsetHeight,m=10;
@@ -4296,10 +4307,10 @@ function renderShop(){
     draw(1.3);ANIM_PREV.shop.push({cv,draw,off:idx*0.37});});
 }
 function saleNotice(){const evs=Object.keys(EVENTS).filter(eventActive);
-  if(evs.length>1)return{txt:evs.map(k=>`${EVENTS[k].name}（到 ${EVENTS[k].to[0]}/${EVENTS[k].to[1]}）`).join('、')+'限定造型開賣中！',col:'#ff9f43'};
-  const ev=activeEvent();if(ev)return{txt:`${EVENTS[ev].name}限定造型開賣中！（到 ${EVENTS[ev].to[0]}/${EVENTS[ev].to[1]}）`,col:EVENTS[ev].col};
-  if(HOLIDAY_ITEMS_ALWAYS_OPEN)return{txt:'萬聖節、聖誕節限定造型限時開放中！',col:'#ff9f43'};return null;}
-function paintShopSale(){const el=$('shopEvPill');if(!el)return;const n=saleNotice();el.hidden=!n;if(n){el.style.setProperty('--c',n.col);el.textContent=n.txt+' 看看 ›';}}
+  if(evs.length>1)return{txt:evs.map(k=>EVENTS[k].name).join('、')+'限定開賣中',col:'#ff9f43'};
+  const ev=activeEvent();if(ev)return{txt:`${EVENTS[ev].name}限定開賣・至 ${EVENTS[ev].to[0]}/${EVENTS[ev].to[1]}`,col:EVENTS[ev].col};
+  if(HOLIDAY_ITEMS_ALWAYS_OPEN)return{txt:'節日限定造型開放中',col:'#ff9f43'};return null;}
+function paintShopSale(){const el=$('shopEvPill');if(!el)return;const n=saleNotice();el.hidden=!n;if(n){el.style.setProperty('--c',n.col);el.textContent=n.txt+' ›';}}
 function openShop(){paintShopSale();renderShop();showOnly('shopScreen');$('shopScreen').scrollTop=0;}
 function spotCard(card,scroller){if(!card)return;setTimeout(()=>{card.scrollIntoView({block:'center',behavior:'smooth'});card.classList.remove('spot');void card.offsetWidth;card.classList.add('spot');setTimeout(()=>card.classList.remove('spot'),2600);},60);}
 function goBuy(id){const x=ITEM(id);if(!x)return;SFX('click');
@@ -4474,7 +4485,7 @@ $('shopGrid').addEventListener('click',e=>{const b=e.target.closest('button[data
   if(b.dataset.act==='buy'){const pr=priceOf(x);if(SAVE.coins<pr)return;SAVE.coins-=pr;SAVE.wardrobe.owned.push(x.id);SFX('coin');}
   equipItem(kindOf(x),x.id,x.slot);renderShop();});
 $('contBtn').onclick=()=>{if(SAVE.run)newGame(SAVE.run.cls,SAVE.run);};
-$('newBtn').onclick=()=>{$('homeHint').textContent='選一隻貓開始新遊戲';$('cats').scrollIntoView({behavior:'smooth',block:'center'});};
+$('newBtn').onclick=()=>{const h=document.querySelector('#startScreen .cats-head')||$('cats');h.scrollIntoView({behavior:'smooth',block:'start'});h.classList.remove('hl-go');void h.offsetWidth;h.classList.add('hl-go');};
 let pendingCls=null;
 let gardRaf=0;
 function openGardPop(){if(!$('startScreen')||$('startScreen').hidden||G)return;const pop=$('gardPop');pop.hidden=false;SFX('evolve');const cv=$('gardPopCv'),c=cv.getContext('2d'),t0=performance.now();
@@ -4543,7 +4554,7 @@ function renderCodex(){
     grid.className='cx-grid ults';
     grid.innerHTML=CLS_ALL.map(cls=>{const C=CLASSES[cls];
       return `<div class="cx-cls" style="color:${C.color}">${C.name}</div>`+ULTS.filter(u=>u.cls===cls).map(u=>{const s=!!SAVE.codex.ults[u.id],[a,b]=u.req.map(id=>SKMAP[id]);
-        return `<div class="cx ult-c${s?'':' locked'}" style="--c:${C.color}"><div class="combo"><span class="cb" title="${s?a.name:''}">${s?`<img src="${iconURL(a.id)}" alt="">`:'？'}</span><i>＋</i><span class="cb" title="${s?b.name:''}">${s?`<img src="${iconURL(b.id)}" alt="">`:'？'}</span><i>→</i><span class="cb res ult">${s?`<img src="${iconURL(u.id)}" alt="">`:'？'}</span></div><h4>${s?u.name:'？？？'}</h4><p class="ult-d">${s?u.desc:'還沒覺醒。把兩個技能都練到 Lv5 就會出現'}</p>${s?`<p class="ult-r">${a.name} ＋ ${b.name} 都練到 Lv5</p>`:''}</div>`;}).join('');}).join('')
+        return `<div class="cx ult-c${s?'':' locked'}" style="--c:${C.color}"><div class="combo"><span class="cb"${s?` data-tip="${a.id}" data-cx="1"`:''}>${s?`<img src="${iconURL(a.id)}" alt="">`:'？'}</span><i>＋</i><span class="cb"${s?` data-tip="${b.id}" data-cx="1"`:''}>${s?`<img src="${iconURL(b.id)}" alt="">`:'？'}</span><i>→</i><span class="cb res ult"${s?` data-tip="${u.id}"`:''}>${s?`<img src="${iconURL(u.id)}" alt="">`:'？'}</span></div><h4>${s?u.name:'？？？'}</h4><p class="ult-d">${s?u.desc:'還沒覺醒。把兩個技能都練到 Lv5 就會出現'}</p>${s?`<p class="ult-r">${a.name} ＋ ${b.name} 都練到 Lv5</p>`:''}</div>`;}).join('');}).join('')
   }
 }
 /* ---------- illustrated guide ---------- */
