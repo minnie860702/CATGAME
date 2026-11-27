@@ -2703,7 +2703,7 @@ function tone(f0,f1,dur,type,vol,dest,at=0){const c=AU.ctx,t=c.currentTime+at,o=
 function noise(dur,ftype,freq,vol,dest,at=0,q=1){const c=AU.ctx,t=c.currentTime+at,src=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();src.buffer=AU.noise;f.type=ftype;f.frequency.value=freq;f.Q.value=q;
   g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);src.connect(f);f.connect(g);g.connect(dest||AU.sfx);src.start(t,Math.random()*0.5);src.stop(t+dur+0.02);}
 const SFXDEF={
-  atk:{gap:110,play(){if(!G)return;if(G.cls==='war')noise(0.09,'bandpass',2600,0.13,null,0,0.8);else if(G.cls==='gard'){noise(0.14,'bandpass',3200,0.11,null,0,1.4);tone(700,1100,0.05,'sine',0.04,null,0.05);}else if(G.cls==='mage')tone(880,1320,0.09,'sine',0.065);else tone(820,420,0.07,'triangle',0.085);}},
+  atk:{gap:110,play(){if(!G)return;if(G.cls==='war')noise(0.09,'bandpass',2600,0.13,null,0,0.8);else if(G.cls==='gard'){noise(0.14,'bandpass',3200,0.11,null,0,1.4);tone(700,1100,0.05,'sine',0.04,null,0.05);}else if(G.cls==='mage')tone(880,1320,0.09,'sine',0.065);/* archer: no basic-attack sound (rapid fire sounded like knocking on a table) */}},
   pop:{gap:45,play(){const k=Math.min(G?G.combo||0:0,80)/80;tone(520*(1+k*0.45),780*(1+k*0.45),0.07,'sine',0.065);}},
   gem:{gap:55,play(){tone(1300+Math.random()*500,1900,0.06,'triangle',0.05);}},
   heal:{gap:200,play(){[0,0.07,0.14].forEach((d,i)=>tone(mtof(76+i*4),mtof(76+i*4),0.12,'sine',0.1,null,d));}},
@@ -2721,6 +2721,8 @@ const SFXDEF={
   death:{gap:1000,play(){[67,63,60,55].forEach((m,i)=>tone(mtof(m),mtof(m-1),0.32,'triangle',0.15,null,i*0.26));}},
   bossdie:{gap:500,play(){noise(0.8,'lowpass',500,0.4);[72,76,79,84,88].forEach((m,i)=>tone(mtof(m),mtof(m),0.2,'square',0.07,null,0.25+i*0.08));}},
   click:{gap:60,play(){tone(900,700,0.04,'sine',0.08);}},
+  // splash tap: a bright welcome chime (browsers allow no sound before this first tap)
+  start:{gap:2000,play(){[72,76,79,84].forEach((m,i)=>tone(mtof(m),mtof(m),0.35,'triangle',0.1,null,i*0.08));tone(mtof(91),mtof(96),0.4,'sine',0.04,null,0.34);noise(0.5,'highpass',6500,0.04,null,0.3);}},
   pick:{gap:150,play(){tone(660,990,0.08,'triangle',0.1);tone(mtof(88),mtof(88),0.14,'sine',0.06,null,0.06);}},
   // goddess: a drop into the lake (bloop + splash)
   splash:{gap:800,play(){tone(380,1300,0.18,'sine',0.13);noise(0.4,'bandpass',1800,0.09,null,0.1,0.9);tone(mtof(91),mtof(91),0.5,'sine',0.035,null,0.28);}},
@@ -4143,7 +4145,7 @@ let kvT0=performance.now();
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches)for(const a of KV_ANIMS)if(a.cv.offsetParent)a.draw(t);requestAnimationFrame(kvLoop);})();
 window.__kvDraw=t=>{for(const a of KV_ANIMS)a.draw(t);};
 (function initSplash(){const sp=$('splash');if(!sp)return;kvAnim(sp.querySelector('.sp-cv'),KV_M,KV_RIG);sp.querySelector('.sp-fill').style.backgroundImage='url('+KV_M+')';
-  let gone=false;const go=e=>{if(gone)return;gone=true;if(e){e.preventDefault();e.stopPropagation();}sp.classList.add('out');setTimeout(()=>sp.remove(),380);};
+  let gone=false;const go=e=>{if(gone)return;gone=true;try{auUnlock();if(AU.ctx)AU.ctx.resume().then(()=>{SFX('start');if(!G&&AU.track!=='menu'){AU.track='menu';AU.step=0;}AU.next=Math.max(AU.next,AU.ctx.currentTime+0.55);}).catch(()=>{});}catch(_){}if(e){e.preventDefault();e.stopPropagation();}sp.classList.add('out');setTimeout(()=>sp.remove(),380);};
   sp.addEventListener('click',go);sp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')go(e);});window.addEventListener('keydown',function k(e){if(!gone&&document.getElementById('splash')){go(e);}window.removeEventListener('keydown',k);});})();
 function kvLayout(){const sp=document.getElementById('splash');if(!sp)return;const art=sp.querySelector('.sp-art');if(!art)return;
   const W=innerWidth,H=innerHeight,IW=1774,IH=887,KX0=280,KX1=1510,KY0=0,KY1=865;
