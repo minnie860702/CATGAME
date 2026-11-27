@@ -2194,7 +2194,7 @@ war:[
  {id:'w_blood',name:'吃飽再戰',ic:'飽',passive:true,desc:l=>`每擊殺一隻怪物回復 ${(0.6+0.4*l).toFixed(1)} 點生命，每秒最多回復 ${(1+0.5*l).toFixed(1)}% 生命`,apply(q,l){q.killHeal+=0.6+0.4*l;q.killHealCap+=0.01+0.005*l;}},
  {id:'w_rage',name:'炸毛模式',ic:'炸',passive:true,desc:l=>`攻擊速度 +${12*l}%，全傷害 +${8*l}%`,apply(q,l){q.atkSpd+=0.12*l;q.dmgMul+=0.08*l;}},
  {id:'w_fiss',name:'磨爪裂地',ic:'裂',desc:l=>`劈開大地，沿直線連續爆裂 ${FISS_N[l-1]} 次，每次 ${26+13*l} 傷害`,
-  up(dt,l,s){tick(s,dt,4-0.3*l,()=>{if(!nearest(p.x,p.y,480))return false;const a0=aimAngle(480);for(const a of(l>=5?[a0-0.45,a0,a0+0.45]:[a0]))for(let i=0;i<FISS_N[l-1];i++)strike({x:p.x+Math.cos(a)*(50+i*46),y:p.y+Math.sin(a)*(50+i*46),r:40+3*l,dmg:D(26+13*l),delay:0.05+0.075*i,kind:'rock',color:'#c98a4b',knock:70});});}},
+  up(dt,l,s){tick(s,dt,4-0.3*l,()=>{if(!nearest(p.x,p.y,480))return false;const a0=aimAngle(480);for(const a of(l>=5?[a0-0.45,a0,a0+0.45]:[a0]))for(let i=0;i<FISS_N[l-1];i++)strike({x:p.x+Math.cos(a)*(50+i*46),y:p.y+Math.sin(a)*(50+i*46),r:40+3*l,dmg:D(26+13*l),delay:0.05+0.075*i,kind:'rock',color:'#c98a4b',knock:70,first:i===0});});}},
  {id:'w_pounce',name:'貓咪飛撲',ic:'撲',aim:true,desc:l=>`朝前方飛撲 ${150+15*l} 距離，沿路造成 ${30+14*l} 傷害，飛撲時無敵`,
   up(dt,l,s){
     if(s.pend>0){s.pend-=dt;if(s.pend<=0){s.a=pounceDir();s.go=0.22;SFX('dash');p.face=Math.cos(s.a)>=0?1:-1;G.fx.push({type:'ring',x:p.x,y:p.y,r:40,life:.25,max:.25,color:'#ffd34d'});}return;}
@@ -2703,7 +2703,7 @@ function tone(f0,f1,dur,type,vol,dest,at=0){const c=AU.ctx,t=c.currentTime+at,o=
 function noise(dur,ftype,freq,vol,dest,at=0,q=1){const c=AU.ctx,t=c.currentTime+at,src=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();src.buffer=AU.noise;f.type=ftype;f.frequency.value=freq;f.Q.value=q;
   g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);src.connect(f);f.connect(g);g.connect(dest||AU.sfx);src.start(t,Math.random()*0.5);src.stop(t+dur+0.02);}
 const SFXDEF={
-  atk:{gap:110,play(){if(!G)return;if(G.cls==='war')noise(0.09,'bandpass',2600,0.13,null,0,0.8);else if(G.cls==='gard'){noise(0.14,'bandpass',3200,0.11,null,0,1.4);tone(700,1100,0.05,'sine',0.04,null,0.05);}else if(G.cls==='mage')tone(880,1320,0.09,'sine',0.065);/* archer: no basic-attack sound (rapid fire sounded like knocking on a table) */}},
+  atk:{gap:110,play(){if(!G)return;if(G.cls==='war')noise(0.09,'bandpass',2600,0.13,null,0,0.8);else if(G.cls==='gard'){noise(0.14,'bandpass',3200,0.11,null,0,1.4);tone(700,1100,0.05,'sine',0.04,null,0.05);}else if(G.cls==='mage')tone(880,1320,0.09,'sine',0.065);else tone(820,420,0.07,'triangle',0.085);}},
   pop:{gap:45,play(){const k=Math.min(G?G.combo||0:0,80)/80;tone(520*(1+k*0.45),780*(1+k*0.45),0.07,'sine',0.065);}},
   gem:{gap:55,play(){tone(1300+Math.random()*500,1900,0.06,'triangle',0.05);}},
   heal:{gap:200,play(){[0,0.07,0.14].forEach((d,i)=>tone(mtof(76+i*4),mtof(76+i*4),0.12,'sine',0.1,null,d));}},
@@ -3355,7 +3355,7 @@ function update(dt){
   // strikes
   for(const s of G.strikes){s.delay-=dt;if(s.delay<=0){nova(s.x,s.y,s.r,s.dmg,{lv:s.lv,knock:s.knock,color:s.color});G.fx.push({type:'boom',x:s.x,y:s.y,r:s.r,life:.35,max:.35,color:s.kind==='thunder'?'255,250,170':s.kind==='meteor'?'255,110,60':s.kind==='hammer'?'255,220,120':'200,150,90'});
     if(s.kind==='thunder')G.fx.push({type:'bolt',pts:[[s.x+rand(-30,30),s.y-400],[s.x+rand(-20,20),s.y-200],[s.x,s.y]],life:.2,max:.2});
-    SFX(s.kind==='thunder'?'zap':'boom');particles(s.x,s.y,s.color,8,160);if(s.kind!=='thunder')G.shake=Math.max(G.shake,s.kind==='rock'?3:6);if(s.lv>=4){G.fx.push({type:'ring',x:s.x,y:s.y,r:s.r*1.35,life:0.45,max:0.45,color:s.lv>=5?'#fff3b0':s.color});if(G.fx.length<360)particles(s.x,s.y,s.color,s.lv>=5?14:8,s.r*2.4);if(s.lv>=5)G.shake=Math.max(G.shake,4);}
+    /* small trail blasts (e.g. sniper Lv5, r<60) stay silent and don't shake: dozens per second sounded like knocking */const big=s.r>=60||s.first;if(s.kind==='thunder'||big)SFX(s.kind==='thunder'?'zap':'boom');particles(s.x,s.y,s.color,8,160);if(s.kind!=='thunder'&&big)G.shake=Math.max(G.shake,s.kind==='rock'?3:6);if(s.lv>=4){G.fx.push({type:'ring',x:s.x,y:s.y,r:s.r*1.35,life:0.45,max:0.45,color:s.lv>=5?'#fff3b0':s.color});if(G.fx.length<360)particles(s.x,s.y,s.color,s.lv>=5?14:8,s.r*2.4);if(s.lv>=5)G.shake=Math.max(G.shake,4);}
     if(s.after)s.after();s.done=true;}}
   G.strikes=G.strikes.filter(s=>!s.done);
 
